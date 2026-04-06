@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Голосування — Студентське Самоврядування</title>
+    <style>
+        :root { --glass: rgba(255, 255, 255, 0.2); --blur: blur(15px); }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: linear-gradient(45deg, #0071e3, #42a5f5);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            color: white;
+        }
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login { background: white; color: #0071e3; }
+        .btn-vote { background: rgba(255,255,255,0.1); color: white; border: 1px solid white; display: none; }
+        .btn-vote:hover { background: white; color: #0071e3; }
+        #status { margin-top: 15px; font-size: 0.9em; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        <h2>🗳️ Голосування</h2>
+        <div id="auth-ui">
+            <p>Увійдіть, щоб ваш голос був зарахований</p>
+            <button class="btn-login" id="btn-google">Увійти через Google</button>
+        </div>
+
+        <div id="vote-ui" style="display:none;">
+            <p id="user-mail"></p>
+            <button class="btn-vote" onclick="castVote('Кандидат А')">Голосувати за Кандидата А</button>
+            <button class="btn-vote" onclick="castVote('Кандидат Б')">Голосувати за Кандидата Б</button>
+        </div>
+        <p id="status"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
+            authDomain: "golosovanna.firebaseapp.com",
+            databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "golosovanna",
+            storageBucket: "golosovanna.firebasestorage.app",
+            messagingSenderId: "869952269827",
+            appId: "1:869952269827:web:c15cf5553e2e43a2062836"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getDatabase();
+        const provider = new GoogleAuthProvider();
+
+        const btnGoogle = document.getElementById('btn-google');
+        const authUi = document.getElementById('auth-ui');
+        const voteUi = document.getElementById('vote-ui');
+        const status = document.getElementById('status');
+
+        btnGoogle.onclick = () => signInWithPopup(auth, provider);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                authUi.style.display = 'none';
+                voteUi.style.display = 'block';
+                document.getElementById('user-mail').innerText = user.email;
+                
+                // Перевірка на повторне голосування
+                const voteData = await get(ref(db, 'votes/' + user.uid));
+                if (voteData.exists()) {
+                    lockVoting("Ви вже проголосували!");
+                } else {
+                    document.querySelectorAll('.btn-vote').forEach(b => b.style.display = 'block');
+                }
+            }
+        });
+
+        window.castVote = async (name) => {
+            const user = auth.currentUser;
+            try {
+                await set(ref(db, 'votes/' + user.uid), {
+                    choice: name,
+                    timestamp: Date.now()
+                });
+                lockVoting("Голос прийнято! Дякуємо.");
+            } catch (e) {
+                alert("Помилка запису.");
+            }
+        };
+
+        function lockVoting(msg) {
+            status.innerText = msg;
+            document.querySelectorAll('.btn-vote').forEach(b => b.disabled = true);
+        }
+    </script>
+</body>
+</html>
+
