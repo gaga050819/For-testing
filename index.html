@@ -2,64 +2,238 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Голосування — Студентське Самоврядування</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DNL Vote — Компактне Голосування</title>
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.2); --blur: blur(15px); }
-        body {
-            font-family: -apple-system, sans-serif;
-            background: linear-gradient(45deg, #0071e3, #42a5f5);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            color: white;
+        :root {
+            --glass: rgba(255, 255, 255, 0.15);
+            --blur: blur(20px);
+            --border: 1px solid rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --accent: #0071e3; /* Apple Blue */
         }
-        .glass-card {
+
+        /* Заборона прокрутки для всього екрану */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #000;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Анімований рідкий фон */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 150%; height: 150%;
+            background: radial-gradient(circle at 20% 30%, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            animation: liquidBg 15s ease infinite;
+            z-index: -1;
+            filter: blur(50px);
+        }
+
+        @keyframes liquidBg {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(10deg); }
+        }
+
+        /* Головна скляна картка (фіксована висота) */
+        .main-container {
             background: var(--glass);
             backdrop-filter: var(--blur);
             -webkit-backdrop-filter: var(--blur);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 25px;
-            padding: 30px;
+            border: var(--border);
+            border-radius: 30px;
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            text-align: center;
+            max-width: 380px;
+            /* Обмежуємо висоту, щоб влізло на екран */
+            height: auto;
+            max-height: 90vh; 
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden; /* Внутрішньої прокрутки теж немає */
         }
-        button {
+
+        h1 {
+            font-size: 1.2rem;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Блок авторизації */
+        #auth-section {
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 12px;
+            text-align: center;
+            margin-top: auto; margin-bottom: auto; /* Центруємо по вертикалі */
+        }
+
+        /* Кнопка Google */
+        .btn-google {
+            background: rgba(255,255,255,0.9);
+            color: #000;
             border: none;
-            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; box-sizing: border-box;
         }
-        .btn-login { background: white; color: #0071e3; }
-        .btn-vote { background: rgba(255,255,255,0.1); color: white; border: 1px solid white; display: none; }
-        .btn-vote:hover { background: white; color: #0071e3; }
-        #status { margin-top: 15px; font-size: 0.9em; opacity: 0.8; }
+        .btn-google:hover { background: #fff; transform: scale(1.02); }
+
+        /* Блок голосування (ховається) */
+        #vote-section {
+            width: 100%;
+            display: none; /* Показується JS */
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between; /* Розтягуємо елементи */
+        }
+
+        #user-info {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin: 0 0 15px 0;
+            text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Якщо довгий email */
+        }
+
+        /* Сітка з подіями (В ОДИН РЯД) */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* ТРИ рівні колонки */
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        /* Картка події (маленька плиткa) */
+        .event-tile {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* Ефект вибору плитки */
+        .event-tile:hover { background: rgba(255, 255, 255, 0.1); }
+        .event-tile.selected {
+            border-color: var(--accent);
+            background: rgba(0, 113, 227, 0.2);
+            box-shadow: 0 0 15px rgba(0, 113, 227, 0.5);
+        }
+
+        /* Маленькі фотографії */
+        .event-tile img {
+            width: 100%;
+            aspect-ratio: 1/1; /* Завжди квадратні */
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
+        .event-tile h3 {
+            font-size: 0.7rem;
+            margin: 0;
+            font-weight: 600;
+            line-height: 1.1;
+            /* Обрізаємо текст, якщо задовгий, щоб не ламав лейаут */
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        /* Велика кнопка підтвердження внизу */
+        #submit-vote-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.3);
+        }
+
+        #submit-vote-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none !important;
+        }
+
+        #submit-vote-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.5);
+        }
+
+        /* Статус (вже проголосував) */
+        #status-msg {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="glass-card">
-        <h2>🗳️ Голосування</h2>
-        <div id="auth-ui">
-            <p>Увійдіть, щоб ваш голос був зарахований</p>
-            <button class="btn-login" id="btn-google">Увійти через Google</button>
+    <div class="main-container">
+        <h1>🗳️ Вибір Події DNL</h1>
+
+        <div id="auth-section">
+            <button class="btn-google" id="btn-google">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G" width="18">
+                Увійти через Google
+            </button>
         </div>
 
-        <div id="vote-ui" style="display:none;">
-            <p id="user-mail"></p>
-            <button class="btn-vote" onclick="castVote('Кандидат А')">Голосувати за Кандидата А</button>
-            <button class="btn-vote" onclick="castVote('Кандидат Б')">Голосувати за Кандидата Б</button>
+        <div id="vote-section">
+            <p id="user-info"></p>
+
+            <div class="events-grid">
+                <div class="event-tile" onclick="selectEvent('Кіноніч', this)">
+                    <img src="https://via.placeholder.com/150" alt="Подія 1">
+                    <h3>Кіноніч у ліцеї</h3>
+                </div>
+
+                <div class="event-tile" onclick="selectEvent('Турнір FIFA', this)">
+                    <img src="https://via.placeholder.com/150" alt="Подія 2">
+                    <h3>Турнір з FIFA 24</h3>
+                </div>
+
+                <div class="event-tile" onclick="selectEvent('Ярмарок', this)">
+                    <img src="https://via.placeholder.com/150" alt="Подія 3">
+                    <h3>Благодійний ярмарок</h3>
+                </div>
+            </div>
+
+            <button id="submit-vote-btn" onclick="finalSubmitVote()" disabled>Підтвердити голос</button>
+            <p id="status-msg"></p>
         </div>
-        <p id="status"></p>
     </div>
 
     <script type="module">
@@ -67,6 +241,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // ТВОЇ КЛЮЧІ FIREBASE (ЯКІ ТИ СКИНУВ)
         const firebaseConfig = {
             apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
             authDomain: "golosovanna.firebaseapp.com",
@@ -82,47 +257,87 @@
         const db = getDatabase();
         const provider = new GoogleAuthProvider();
 
-        const btnGoogle = document.getElementById('btn-google');
-        const authUi = document.getElementById('auth-ui');
-        const voteUi = document.getElementById('vote-ui');
-        const status = document.getElementById('status');
+        // Елементи DOM
+        const authSection = document.getElementById('auth-section');
+        const voteSection = document.getElementById('vote-section');
+        const userInfoText = document.getElementById('user-info');
+        const submitBtn = document.getElementById('submit-vote-btn');
+        const statusMsg = document.getElementById('status-msg');
 
-        btnGoogle.onclick = () => signInWithPopup(auth, provider);
+        // Змінні для зберігання вибору
+        let selectedCandidate = null;
 
+        // Логіка входу
+        document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
+
+        // Слідкуємо за станом користувача
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                authUi.style.display = 'none';
-                voteUi.style.display = 'block';
-                document.getElementById('user-mail').innerText = user.email;
+                // Користувач увійшов
+                authSection.style.display = 'none';
+                voteSection.style.display = 'flex';
+                userInfoText.innerText = user.email;
                 
-                // Перевірка на повторне голосування
-                const voteData = await get(ref(db, 'votes/' + user.uid));
-                if (voteData.exists()) {
-                    lockVoting("Ви вже проголосували!");
-                } else {
-                    document.querySelectorAll('.btn-vote').forEach(b => b.style.display = 'block');
+                // Перевірка, чи вже є голос у базі (захист від накрутки)
+                const snapshot = await get(ref(db, 'votes/' + user.uid));
+                if (snapshot.exists()) {
+                    showAlreadyVotedState();
                 }
+            } else {
+                // Користувач вийшов
+                authSection.style.display = 'block';
+                voteSection.style.display = 'none';
             }
         });
 
-        window.castVote = async (name) => {
+        // 1. Функція вибору плитки (локально, без запису в базу)
+        window.selectEvent = (name, element) => {
+            // Знімаємо виділення з усіх інших
+            document.querySelectorAll('.event-tile').forEach(tile => tile.classList.remove('selected'));
+            // Виділяємо поточну
+            element.classList.add('selected');
+            
+            selectedCandidate = name;
+            submitBtn.disabled = false; // Активуємо кнопку "Підтвердити"
+            submitBtn.innerText = `Голосувати за: ${name}`;
+        };
+
+        // 2. Функція фінальної відправки голосу в Firebase
+        window.finalSubmitVote = async () => {
             const user = auth.currentUser;
+            if (!user || !selectedCandidate) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Відправка...";
+
             try {
+                // Записуємо в базу під ID користувача (ваші Rules це дозволяють)
                 await set(ref(db, 'votes/' + user.uid), {
-                    choice: name,
+                    candidateId: selectedCandidate,
                     timestamp: Date.now()
                 });
-                lockVoting("Голос прийнято! Дякуємо.");
+                // Успіх
+                showAlreadyVotedState();
             } catch (e) {
-                alert("Помилка запису.");
+                console.error(e);
+                alert("Помилка запису. Спробуйте ще раз.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Підтвердити голос";
             }
         };
 
-        function lockVoting(msg) {
-            status.innerText = msg;
-            document.querySelectorAll('.btn-vote').forEach(b => b.disabled = true);
+        // Стан "Вже проголосував"
+        function showAlreadyVotedState() {
+            // Ховаємо сітку та кнопку
+            document.querySelector('.events-grid').style.display = 'none';
+            submitBtn.style.display = 'none';
+            userInfoText.style.display = 'none';
+
+            // Показуємо повідомлення
+            statusMsg.style.display = 'block';
+            statusMsg.innerHTML = "🎉 Твій голос враховано!<br><span style='font-size:0.8rem; opacity:0.7;'>Дякуємо за участь.</span>";
+            statusMsg.style.color = "#4cd964"; // Green
         }
     </script>
 </body>
 </html>
-
