@@ -113,38 +113,54 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.app/firebase-database.js";
+        <script type="module">
+    // Правильні посилання на модулі Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
-            authDomain: "golosovanna.firebaseapp.com",
-            databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "golosovanna",
-            storageBucket: "golosovanna.firebasestorage.app",
-            messagingSenderId: "869952269827",
-            appId: "1:869952269827:web:c15cf5553e2e43a2062836"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
+        authDomain: "golosovanna.firebaseapp.com",
+        databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "golosovanna",
+        storageBucket: "golosovanna.firebasestorage.app",
+        messagingSenderId: "869952269827",
+        appId: "1:869952269827:web:c15cf5553e2e43a2062836"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const db = getDatabase();
-        const provider = new GoogleAuthProvider();
+    // Ініціалізація
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getDatabase();
+    const provider = new GoogleAuthProvider();
 
-        let selectedCandidate = null;
+    // ФУНКЦІЯ ВХОДУ (Додай її сюди)
+    window.login = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                console.log("Успішний вхід:", result.user.email);
+            })
+            .catch((error) => {
+                console.error("Помилка входу:", error.message);
+                alert("Помилка входу: " + error.message);
+            });
+    };
 
-        // Авторизація
-        window.login = () => signInWithPopup(auth, provider);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'flex';
-                checkExistingVote(user.uid);
-            }
-        });
-
+    // Слідкуємо за входом
+    onAuthStateChanged(auth, async (user) => {
+        const authScreen = document.getElementById('auth-screen');
+        const mainContent = document.getElementById('main-content');
+        
+        if (user) {
+            if(authScreen) authScreen.style.display = 'none';
+            if(mainContent) mainContent.style.display = 'flex';
+            checkExistingVote(user.uid);
+        } else {
+            if(authScreen) authScreen.style.display = 'block';
+            if(mainContent) mainContent.style.display = 'none';
+        }
+    });
         // Перемикач вкладок
         window.showTab = (tab, el) => {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
