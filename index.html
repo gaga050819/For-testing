@@ -3,230 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DNL — Голосування та Ідеї</title>
+    <title>DNL — Платформа Самоврядування</title>
     <style>
         :root {
-            --glass: rgba(30, 30, 35, 0.7);
-            --blur: blur(20px);
+            --glass: rgba(20, 20, 25, 0.8);
+            --blur: blur(25px);
             --border: 1px solid rgba(255, 255, 255, 0.1);
             --accent: #0A84FF;
+            --success: #32d74b;
         }
 
+        /* Анімований фон, що не зсувається */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100vh;
-            overflow: hidden; font-family: -apple-system, sans-serif;
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
-            background-size: 400% 400%; animation: gradientBg 15s ease infinite;
+            overflow: hidden; font-family: -apple-system, system-ui, sans-serif;
+            background: radial-gradient(circle at top right, #1e3a8a, #000), 
+                        radial-gradient(circle at bottom left, #581c87, #000);
             display: flex; justify-content: center; align-items: center; color: white;
         }
 
-        @keyframes gradientBg { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
-
         .main-container {
             background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-            border: var(--border); border-radius: 25px; width: 95%; max-width: 450px;
-            min-height: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
+            border: var(--border); border-radius: 30px; width: 92%; max-width: 420px;
+            height: 520px; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
 
-        /* Вкладки (Tabs) */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 15px; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 10px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
-        .tab.active { background: var(--accent); color: white; }
+        /* Заголовок */
+        h1 { font-size: 1.4rem; margin: 0 0 20px 0; text-align: center; font-weight: 800; letter-spacing: -0.5px; }
 
-        /* Контент */
-        .content-section { display: none; flex-direction: column; flex-grow: 1; }
+        /* Вкладки */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 18px; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 14px; font-weight: 600; font-size: 0.85rem; transition: 0.3s; opacity: 0.6; }
+        .tab.active { background: var(--accent); color: white; opacity: 1; }
+
+        /* Секції контенту */
+        .content-section { display: none; flex-direction: column; height: 100%; }
         .content-section.active { display: flex; }
 
-        /* Стилі форми (Анкета) */
+        /* Голосування (Сітка) */
+        .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .event-tile { 
+            background: rgba(255,255,255,0.05); border: var(--border); border-radius: 18px; 
+            padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        .event-tile.selected { border-color: var(--accent); background: rgba(10,132,255,0.2); transform: scale(1.05); }
+        .event-tile img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+        .event-tile b { font-size: 0.7rem; display: block; height: 2.4em; overflow: hidden; line-height: 1.2; }
+        .live-count { font-size: 0.75rem; font-weight: 800; color: var(--accent); margin-top: 5px; }
+
+        /* Анкета (Поля) */
         input, textarea {
-            width: 100%; background: rgba(255,255,255,0.05); border: var(--border);
-            border-radius: 12px; padding: 12px; color: white; margin-bottom: 10px;
-            font-family: inherit; box-sizing: border-box;
+            width: 100%; background: rgba(255,255,255,0.07); border: var(--border);
+            border-radius: 15px; padding: 14px; color: white; margin-bottom: 12px;
+            font-family: inherit; box-sizing: border-box; font-size: 0.9rem;
         }
-        textarea { height: 80px; resize: none; }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+        textarea { height: 100px; resize: none; }
+        input:focus { border-color: var(--accent); outline: none; }
 
-        /* Стилі голосування (як були) */
-        .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .event-tile { background: rgba(255,255,255,0.05); border: var(--border); border-radius: 15px; padding: 8px; text-align: center; cursor: pointer; font-size: 0.7rem; }
-        .event-tile.selected { border-color: var(--accent); background: rgba(10,132,255,0.2); }
-        .event-tile img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
-        .live-count { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 3px; font-weight: bold; margin-top: 5px; }
-
-        button.main-btn {
-            width: 100%; padding: 15px; background: var(--accent); border: none;
-            border-radius: 15px; color: white; font-weight: bold; cursor: pointer; margin-top: auto;
+        /* Кнопки */
+        .main-btn {
+            width: 100%; padding: 16px; background: var(--accent); border: none;
+            border-radius: 18px; color: white; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; margin-top: auto;
         }
-        button.main-btn:disabled { background: #444; opacity: 0.5; }
+        .main-btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+        .main-btn:active { transform: scale(0.98); }
 
-        #auth-screen { text-align: center; }
+        /* Стан успіху */
+        .success-msg { text-align: center; padding: 40px 10px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        <!-- Екран авторизації -->
-        <div id="auth-screen">
-            <h2>🔐 Вхід</h2>
-            <p>Увійдіть через Google, щоб отримати доступ</p>
+        <h1 id="title">🗳️ DNL Platform</h1>
+
+        <div id="auth-screen" style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; text-align: center;">
+            <p style="opacity: 0.7; margin-bottom: 30px;">Авторизуйтесь через Google для доступу до сервісів ліцею</p>
             <button class="main-btn" onclick="login()">Увійти через Google</button>
         </div>
 
-        <!-- Основний екран (після входу) -->
-        <div id="main-content" style="display: none; height: 100%; flex-direction: column;">
+        <div id="main-content" style="display: none; flex-direction: column; height: 100%;">
             <div class="tabs">
-                <div class="tab active" onclick="showTab('vote', this)">🗳️ Голосування</div>
-                <div class="tab" onclick="showTab('form', this)">📝 Анкета</div>
+                <div id="tab-v" class="tab active" onclick="switchTab('vote')">Голосування</div>
+                <div id="tab-f" class="tab" onclick="switchTab('form')">Скринька ідей</div>
             </div>
 
-            <!-- СЕКЦІЯ 1: ГОЛОСУВАННЯ -->
             <div id="vote-section" class="content-section active">
                 <div class="events-grid">
-                    <div class="event-tile" onclick="selectEvent('Кіноніч', this)">
-                        <img src="https://via.placeholder.com/100" alt="1">
+                    <div class="event-tile" id="tile-1" onclick="selectEvent('Кіноніч', 'tile-1')">
+                        <img src="https://via.placeholder.com/150/0A84FF/ffffff?text=Movie" alt="1">
                         <b>Кіноніч</b>
-                        <div class="live-count" id="count-kino">0 👤</div>
+                        <div class="live-count" id="count-kino">0</div>
                     </div>
-                    <div class="event-tile" onclick="selectEvent('Турнір FIFA', this)">
-                        <img src="https://via.placeholder.com/100" alt="2">
+                    <div class="event-tile" id="tile-2" onclick="selectEvent('Турнір FIFA', 'tile-2')">
+                        <img src="https://via.placeholder.com/150/581c87/ffffff?text=FIFA" alt="2">
                         <b>FIFA 24</b>
-                        <div class="live-count" id="count-fifa">0 👤</div>
+                        <div class="live-count" id="count-fifa">0</div>
                     </div>
-                    <div class="event-tile" onclick="selectEvent('Ярмарок', this)">
-                        <img src="https://via.placeholder.com/100" alt="3">
+                    <div class="event-tile" id="tile-3" onclick="selectEvent('Ярмарок', 'tile-3')">
+                        <img src="https://via.placeholder.com/150/32d74b/ffffff?text=Shop" alt="3">
                         <b>Ярмарок</b>
-                        <div class="live-count" id="count-yarmarok">0 👤</div>
+                        <div class="live-count" id="count-yarmarok">0</div>
                     </div>
                 </div>
-                <button id="vote-btn" class="main-btn" onclick="submitVote()" disabled>Оберіть подію</button>
-                <p id="vote-status" style="text-align:center; color:#32d74b; display:none;">Голос прийнято! ✅</p>
+                <button id="vote-btn" class="main-btn" onclick="handleVote()" disabled>Оберіть варіант</button>
+                <div id="voted-msg" class="success-msg" style="display:none;">
+                    <span style="font-size: 3rem;">✅</span>
+                    <p>Твій голос враховано!</p>
+                </div>
             </div>
 
-            <!-- СЕКЦІЯ 2: АНКЕТА -->
             <div id="form-section" class="content-section">
-                <input type="text" id="user-name" placeholder="Твоє Ім'я та Клас (напр. Іван, 10-А)">
-                <textarea id="user-idea" placeholder="Яку подію чи зміну ти хочеш бачити в ліцеї?"></textarea>
-                <button id="form-btn" class="main-btn" onclick="submitForm()">Надіслати ідею</button>
-                <p id="form-status" style="text-align:center; color:#32d74b; display:none;">Ідея збережена! Дякуємо 💡</p>
+                <input type="text" id="user-name" placeholder="Твоє ім'я та клас">
+                <textarea id="user-idea" placeholder="Опиши свою ідею для ліцею..."></textarea>
+                <button id="form-btn" class="main-btn" onclick="handleForm()">Надіслати пропозицію</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        <script type="module">
-    // Правильні посилання на модулі Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
-        authDomain: "golosovanna.firebaseapp.com",
-        databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "golosovanna",
-        storageBucket: "golosovanna.firebasestorage.app",
-        messagingSenderId: "869952269827",
-        appId: "1:869952269827:web:c15cf5553e2e43a2062836"
-    };
-
-    // Ініціалізація
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getDatabase();
-    const provider = new GoogleAuthProvider();
-
-    // ФУНКЦІЯ ВХОДУ (Додай її сюди)
-    window.login = () => {
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log("Успішний вхід:", result.user.email);
-            })
-            .catch((error) => {
-                console.error("Помилка входу:", error.message);
-                alert("Помилка входу: " + error.message);
-            });
-    };
-
-    // Слідкуємо за входом
-    onAuthStateChanged(auth, async (user) => {
-        const authScreen = document.getElementById('auth-screen');
-        const mainContent = document.getElementById('main-content');
-        
-        if (user) {
-            if(authScreen) authScreen.style.display = 'none';
-            if(mainContent) mainContent.style.display = 'flex';
-            checkExistingVote(user.uid);
-        } else {
-            if(authScreen) authScreen.style.display = 'block';
-            if(mainContent) mainContent.style.display = 'none';
-        }
-    });
-        // Перемикач вкладок
-        window.showTab = (tab, el) => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById(tab + '-section').classList.add('active');
+        // Твої конфігураційні дані
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
+            authDomain: "golosovanna.firebaseapp.com",
+            databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "golosovanna",
+            storageBucket: "golosovanna.firebasestorage.app",
+            messagingSenderId: "869952269827",
+            appId: "1:869952269827:web:c15cf5553e2e43a2062836"
         };
 
-        // Логіка голосування
-        window.selectEvent = (name, el) => {
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getDatabase();
+        const provider = new GoogleAuthProvider();
+
+        let selectedChoice = null;
+
+        // ВХІД
+        window.login = () => {
+            signInWithPopup(auth, provider).catch(err => alert("Помилка авторизації: " + err.message));
+        };
+
+        // ТАБИ
+        window.switchTab = (type) => {
+            document.getElementById('vote-section').classList.toggle('active', type === 'vote');
+            document.getElementById('form-section').classList.toggle('active', type === 'form');
+            document.getElementById('tab-v').classList.toggle('active', type === 'vote');
+            document.getElementById('tab-f').classList.toggle('active', type === 'form');
+        };
+
+        // ЛОГІКА ГОЛОСУВАННЯ
+        window.selectEvent = (name, id) => {
             document.querySelectorAll('.event-tile').forEach(t => t.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedCandidate = name;
-            document.getElementById('vote-btn').disabled = false;
-            document.getElementById('vote-btn').innerText = "Голосувати за: " + name;
+            document.getElementById(id).classList.add('selected');
+            selectedChoice = name;
+            const btn = document.getElementById('vote-btn');
+            btn.disabled = false;
+            btn.innerText = "Голосувати";
         };
 
-        window.submitVote = async () => {
+        window.handleVote = async () => {
             const user = auth.currentUser;
-            await set(ref(db, 'votes/' + user.uid), { candidateId: selectedCandidate, timestamp: Date.now() });
-            showVotedState();
+            if (!user || !selectedChoice) return;
+            try {
+                await set(ref(db, 'votes/' + user.uid), {
+                    candidateId: selectedChoice,
+                    timestamp: Date.now()
+                });
+            } catch (e) { alert("Помилка! Ви вже могли проголосувати."); }
         };
 
-        // Лічильники в реальному часі
-        onValue(ref(db, 'votes'), (snap) => {
-            let counts = { 'Кіноніч': 0, 'Турнір FIFA': 0, 'Ярмарок': 0 };
-            snap.forEach(child => { counts[child.val().candidateId]++; });
-            document.getElementById('count-kino').innerText = counts['Кіноніч'] + ' 👤';
-            document.getElementById('count-fifa').innerText = counts['Турнір FIFA'] + ' 👤';
-            document.getElementById('count-yarmarok').innerText = counts['Ярмарок'] + ' 👤';
-        });
-
-        // --- НОВА ЛОГІКА АНКЕТИ ---
-        window.submitForm = async () => {
+        // ЛОГІКА АНКЕТИ
+        window.handleForm = async () => {
             const name = document.getElementById('user-name').value;
             const idea = document.getElementById('user-idea').value;
-            if (!name || !idea) return alert("Заповни всі поля!");
+            if (!name || !idea) return alert("Заповніть усі поля!");
 
-            document.getElementById('form-btn').disabled = true;
-            document.getElementById('form-btn').innerText = "Надсилаємо...";
+            const btn = document.getElementById('form-btn');
+            btn.disabled = true;
+            btn.innerText = "Надсилаємо...";
 
             try {
-                // Використовуємо push(), щоб створювати список відповідей
                 await push(ref(db, 'suggestions'), {
                     userName: name,
                     text: idea,
                     email: auth.currentUser.email,
                     timestamp: Date.now()
                 });
-                document.getElementById('form-section').innerHTML = `<p style="text-align:center; padding: 20px;">💡 Твоя ідея надіслана!<br>Разом ми зробимо ліцей кращим.</p>`;
-            } catch (e) {
-                alert("Помилка при надсиланні");
-                document.getElementById('form-btn').disabled = false;
-            }
+                document.getElementById('form-section').innerHTML = `<div class="success-msg"><h2>💡 Дякуємо!</h2><p>Твою ідею передано самоврядуванню.</p></div>`;
+            } catch (e) { alert("Помилка відправки"); btn.disabled = false; }
         };
 
-        async function checkExistingVote(uid) {
-            const snap = await get(ref(db, 'votes/' + uid));
-            if (snap.exists()) showVotedState();
-        }
+        // СЛІДКУВАННЯ ЗА СТАНОМ
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
+                
+                // Перевірка голосу
+                onValue(ref(db, 'votes/' + user.uid), (snap) => {
+                    if (snap.exists()) {
+                        document.querySelector('.events-grid').style.display = 'none';
+                        document.getElementById('vote-btn').style.display = 'none';
+                        document.getElementById('voted-msg').style.display = 'block';
+                    }
+                });
+            }
+        });
 
-        function showVotedState() {
-            document.getElementById('vote-btn').style.display = 'none';
-            document.getElementById('vote-status').style.display = 'block';
-            document.querySelectorAll('.event-tile').forEach(t => t.style.opacity = '0.6');
-        }
+        // ЛІЧИЛЬНИКИ
+        onValue(ref(db, 'votes'), (snap) => {
+            let counts = { 'Кіноніч': 0, 'Турнір FIFA': 0, 'Ярмарок': 0 };
+            snap.forEach(c => { if(counts[c.val().candidateId] !== undefined) counts[c.val().candidateId]++; });
+            document.getElementById('count-kino').innerText = counts['Кіноніч'] + " 👤";
+            document.getElementById('count-fifa').innerText = counts['Турнір FIFA'] + " 👤";
+            document.getElementById('count-yarmarok').innerText = counts['Ярмарок'] + " 👤";
+        });
     </script>
 </body>
 </html>
