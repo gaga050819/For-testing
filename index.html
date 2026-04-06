@@ -4,126 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f1e1cd" id="theme-color-meta">
-    <title>Firebase Заявка | Хто зверху</title>
+    <title>DNL | Хто зверху</title>
     
-    <!-- Підключаємо Firebase SDK (Модулі) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <style>
         :root {  
             --bg: #f1e1cd;  
             --text: #4b5982;  
             --card-bg: rgba(255,255,255,0.3);  
             --card-border: rgba(255,255,255,0.5);  
+            --accent: #0A84FF;
             --tr: all 0.4s cubic-bezier(0.25,0.8,0.25,1);  
         }  
         *,*::before,*::after { box-sizing: border-box; }  
         
         body {  
-            margin: 0;  
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;  
+            margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif;  
             background: linear-gradient(180deg, var(--bg), #e5d2b8, var(--bg));  
-            color: var(--text);  
-            display: flex; flex-direction: column; align-items: center;  
-            min-height: 100vh;  
-            transition: background 0.8s ease, color 0.5s ease;  
+            color: var(--text); display: flex; flex-direction: column; align-items: center;  
+            min-height: 100vh; transition: var(--tr);
         }  
         
         body.dark {  
-            --bg: #4b5982;  
-            --text: #f1e1cd;  
-            --card-bg: rgba(241,225,205,0.1);  
-            --card-border: rgba(241,225,205,0.2);  
+            --bg: #4b5982; --text: #f1e1cd;  
+            --card-bg: rgba(241,225,205,0.1); --card-border: rgba(241,225,205,0.2);  
             background: linear-gradient(180deg,#4b5982,#353f5c,#4b5982) !important;  
         }
 
+        /* Кнопки керування */
         .controls { position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; }
         #themeBtn, #menuBtn {
-            padding: 12px; border-radius: 50px;
-            border: 1px solid var(--card-border);
-            background: var(--card-bg); backdrop-filter: blur(15px);
-            color: inherit; cursor: pointer; font-weight: 600;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: var(--tr);
-            display: flex; justify-content: center; align-items: center;
+            padding: 12px; border-radius: 50px; border: 1px solid var(--card-border);
+            background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            color: inherit; cursor: pointer; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: var(--tr);
         }
-        #menuBtn { width: 50px; height: 50px; font-size: 22px; }
 
+        /* Бокове меню */
         .sidebar {
-            position: fixed; top: 0; left: -100%;
-            width: 100%; max-width: 300px; height: 100vh;
-            background: var(--card-bg); backdrop-filter: blur(40px);
-            border-right: 1px solid var(--card-border);
-            z-index: 1001; transition: var(--tr);
-            display: flex; flex-direction: column; padding: 100px 30px 0;
-            box-shadow: 15px 0 50px rgba(0,0,0,0.2);
-            opacity: 0; visibility: hidden;
+            position: fixed; top: 0; left: -100%; width: 100%; max-width: 300px; height: 100vh;
+            background: var(--card-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            border-right: 1px solid var(--card-border); z-index: 1001; transition: var(--tr);
+            display: flex; flex-direction: column; padding: 100px 30px 0; opacity: 0;
         }
-        .sidebar.open { left: 0; opacity: 1; visibility: visible; }
+        .sidebar.open { left: 0; opacity: 1; }
         .sidebar a {
-            text-decoration: none; padding: 18px 25px; margin-bottom: 20px;
-            border-radius: 25px; background: rgba(255,255,255,0.1);
-            border: 1px solid var(--card-border);
-            color: inherit; font-weight: 700; font-size: 1.2rem; transition: var(--tr);
-        }
-        #closeBtn { position: absolute; top: 30px; right: 30px; background: none; border: none; font-size: 28px; color: inherit; cursor: pointer; }
-
-        .hero-image-container {
-            width: 90%; max-width: 450px;
-            margin-top: 100px; border-radius: 40px;
-            overflow: hidden; border: 1px solid var(--card-border);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            background: var(--card-bg); line-height: 0;
-        }
-        .hero-image { width: 100%; height: auto; object-fit: cover; }
-
-        header { margin: 30px 0 20px; text-align: center; }
-        .main-title { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 900; margin: 0; }
-
-        .form-container {
-            width: 90%; max-width: 450px;
-            background: var(--card-bg); backdrop-filter: blur(25px);
-            border: 1px solid var(--card-border);
-            border-radius: 40px; padding: 35px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            margin-bottom: 50px;
+            text-decoration: none; padding: 18px 25px; margin-bottom: 20px; border-radius: 25px;
+            background: rgba(255,255,255,0.1); border: 1px solid var(--card-border);
+            color: inherit; font-weight: 700; transition: var(--tr);
         }
 
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; padding-left: 10px; }
+        /* Контейнери */
+        .container {
+            width: 90%; max-width: 450px; margin-top: 100px; text-align: center;
+        }
+
+        .hero-image {
+            width: 100%; border-radius: 40px; border: 1px solid var(--card-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px;
+        }
+
+        .form-card {
+            background: var(--card-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border); border-radius: 40px; padding: 35px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); margin-bottom: 50px;
+        }
 
         input {
-            width: 100%; background: rgba(255,255,255,0.15);
-            border: 1px solid var(--card-border);
-            border-radius: 20px; padding: 16px 20px;
-            color: var(--text); font-size: 1rem; font-family: inherit;
-            outline: none; transition: var(--tr);
+            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid var(--card-border);
+            border-radius: 20px; padding: 16px 20px; color: var(--text); margin-bottom: 20px;
+            font-size: 1rem; outline: none; transition: var(--tr);
         }
-        input:focus { background: rgba(255,255,255,0.3); border-color: var(--text); transform: translateY(-2px); }
 
-        .submit-btn {
-            width: 100%; padding: 18px; border-radius: 22px; border: none;
-            background: var(--text); color: var(--bg);
-            font-size: 1.1rem; font-weight: 800; cursor: pointer;
-            transition: var(--tr); box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-top: 10px;
+        button.main-btn {
+            width: 100%; padding: 18px; border: none; border-radius: 22px;
+            background: var(--accent); color: white; font-weight: 800;
+            font-size: 1.1rem; cursor: pointer; transition: var(--tr);
         }
-        .submit-btn:hover { transform: scale(1.02); }
-        .submit-btn:disabled { opacity: 0.5; }
+        button.main-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+        button:disabled { background: #666; opacity: 0.6; cursor: not-allowed; }
 
-        footer { margin-top: auto; padding: 40px; text-align: center; opacity: 0.6; font-size: 0.85rem; }
+        #login-screen { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        
+        .user-info { font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8; }
 
         @media (max-width: 768px) {
-            #menuBtn { position: fixed; right: 20px; left: auto; top: 15px; }
-            .controls { top: 15px; left: 20px; }
+            #menuBtn { position: fixed; right: 20px; left: auto; top: 15px; width: 50px; height: 50px; }
         }
     </style>
 </head>
 <body>
 
 <div class="sidebar" id="sidebar">  
-    <button id="closeBtn" onclick="toggleMenu()">✖</button>  
     <a href="index.html">Головна</a>  
     <a href="news.html">Новини</a>  
     <a href="past_events.html">Проєкти</a>  
@@ -136,110 +106,109 @@
     <button id="menuBtn" onclick="toggleMenu()">🏠</button>  
 </div>
 
-<div class="hero-image-container">
-    <img src="URL_ТВОЄЇ_ФОТКИ" alt="Хто зверху" class="hero-image">
+<div class="container">
+    <img src="https://via.placeholder.com/450/0A84FF/fff?text=Хто+Зверху" class="hero-image" alt="Banner">
+    
+    <!-- ЕКРАН ВХОДУ -->
+    <div id="login-screen" class="form-card">
+        <h1 style="margin: 0;">🔐 Вхід</h1>
+        <p>Авторизуйтесь, щоб залишити заявку</p>
+        <button class="main-btn" id="google-btn">Увійти через Google</button>
+    </div>
+
+    <!-- ФОРМА ЗАЯВКИ -->
+    <div id="app-content" class="form-card" style="display: none;">
+        <h1 style="margin-bottom: 10px;">Заявка</h1>
+        <div id="user-display" class="user-info"></div>
+        
+        <input type="text" id="user-class" placeholder="Твій клас (наприклад: 10-А)">
+        <input type="text" id="user-phone" placeholder="Номер телефону або Instagram">
+        
+        <button class="main-btn" id="send-btn" onclick="sendToFirebase()">Надіслати заявку</button>
+        <p id="status-msg" style="display:none; color:#32d74b; margin-top:15px; font-weight:bold;">Ви вже подали заявку! ✅</p>
+    </div>
 </div>
 
-<header>
-    <h1 class="main-title">Хто зверху</h1>
-    <p style="opacity: 0.7; margin-top: 10px;">Запис у базу Firebase</p>
-</header>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-<div class="form-container">
-    <div class="input-group">
-        <label>Прізвище та Ім'я</label>
-        <input type="text" id="userName" placeholder="Введіть дані">
-    </div>
-
-    <div class="input-group">
-        <label>Клас</label>
-        <input type="text" id="userClass" placeholder="Наприклад: 11-Б">
-    </div>
-
-    <div class="input-group">
-        <label>Email (для підтвердження)</label>
-        <input type="email" id="userEmail" placeholder="example@gmail.com">
-    </div>
-
-    <button class="submit-btn" id="sendBtn" onclick="sendData()">📨 Надіслати</button>
-</div>
-
-<footer>&copy; 2026 учнівське самоврядування</footer>
-
-<script>
-    // 1. НАЛАШТУВАННЯ FIREBASE (Заміни на свої з Firebase Console)
+    // Твої налаштування Firebase
     const firebaseConfig = {
-        apiKey: "ТВІЙ_API_KEY",
-        authDomain: "ТВІЙ_PROJECT.firebaseapp.com",
-        databaseURL: "https://ТВІЙ_PROJECT-default-rtdb.firebaseio.com",
-        projectId: "ТВІЙ_PROJECT_ID",
-        storageBucket: "ТВІЙ_PROJECT.appspot.com",
-        messagingSenderId: "ID",
-        appId: "APP_ID"
+        apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
+        authDomain: "golosovanna.firebaseapp.com",
+        databaseURL: "https://golosovanna-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "golosovanna",
+        storageBucket: "golosovanna.firebasestorage.app",
+        messagingSenderId: "869952269827",
+        appId: "1:869952269827:web:c15cf5553e2e43a2062836"
     };
 
-    // Ініціалізація
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getDatabase();
+    const provider = new GoogleAuthProvider();
 
-    // 2. ФУНКЦІЯ ВІДПРАВКИ
-    function sendData() {
-        const name = document.getElementById('userName').value.trim();
-        const uClass = document.getElementById('userClass').value.trim();
-        const email = document.getElementById('userEmail').value.trim();
-        const btn = document.getElementById('sendBtn');
+    // Вхід
+    document.getElementById('google-btn').onclick = () => {
+        signInWithPopup(auth, provider).catch(e => alert("Помилка: " + e.message));
+    };
 
-        if (!name || !uClass || !email) {
-            alert('Будь ласка, заповніть усі поля!');
-            return;
+    // Перевірка стану
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('user-display').innerText = `Привіт, ${user.displayName} (${user.email})`;
+            
+            // Перевірка чи вже є заявка
+            onValue(ref(db, 'applications/' + user.uid), (s) => {
+                if (s.exists()) {
+                    document.getElementById('user-class').style.display = 'none';
+                    document.getElementById('user-phone').style.display = 'none';
+                    document.getElementById('send-btn').style.display = 'none';
+                    document.getElementById('status-msg').style.display = 'block';
+                }
+            });
         }
+    });
 
-        btn.disabled = true;
-        btn.innerText = '⌛ Зберігаємо...';
+    // Надсилання
+    window.sendToFirebase = () => {
+        const user = auth.currentUser;
+        const uClass = document.getElementById('user-class').value;
+        const uPhone = document.getElementById('user-phone').value;
 
-        // Запис у Firebase (вузол "applications")
-        const newPostRef = database.ref('applications').push();
-        newPostRef.set({
-            name: name,
+        if (!uClass || !uPhone) return alert("Заповни всі поля!");
+
+        set(ref(db, 'applications/' + user.uid), {
+            name: user.displayName,
+            email: user.email,
             class: uClass,
-            email: email,
-            timestamp: Date.now()
-        }, (error) => {
-            if (error) {
-                alert('Помилка запису: ' + error.message);
-                btn.disabled = false;
-                btn.innerText = '📨 Надіслати';
-            } else {
-                // ПІСЛЯ УСПІШНОГО ЗАПИСУ В FIREBASE — ДУБЛЮЄМО В TELEGRAM
-                sendToTelegram(name, uClass, email);
-            }
+            contact: uPhone,
+            time: Date.now()
+        }).then(() => {
+            // Також дублюємо в Telegram для сповіщення
+            sendToTelegram(user.displayName, uClass, uPhone);
         });
-    }
+    };
 
-    // 3. ТЕЛЕГРАМ СПОВІЩЕННЯ
-    async function sendToTelegram(name, uClass, email) {
+    async function sendToTelegram(name, uClass, contact) {
         const TG_TOKEN = '8450851710:AAGsC5O72ab-C8ZWw2guCc7bGMX0rRbhhZI';
         const TG_CHAT_ID = '6190541661';
-        const text = `🔥 FIREBASE: НОВА ЗАЯВКА\n👤 ${name}\n🏫 Клас: ${uClass}\n📧 Email: ${email}`;
-
-        try {
-            await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text })
-            });
-            alert('✅ Дякуємо! Твою заявку збережено в базу Firebase.');
-            document.querySelectorAll('input').forEach(i => i.value = '');
-        } catch (e) {
-            console.log('Telegram error, but Firebase is OK');
-        } finally {
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = false;
-            btn.innerText = '📨 Надіслати';
-        }
+        const text = `🎯 НОВА ЗАЯВКА FIREBASE:\n👤 Учень: ${name}\n🏫 Клас: ${uClass}\n📱 Контакт: ${contact}`;
+        
+        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text })
+        });
     }
+</script>
 
-    // 4. ТЕМА ТА МЕНЮ (як у news.html)
+<script>
+    // Інтерфейсні функції
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
     function toggleTheme() {
         document.body.classList.toggle('dark');
@@ -247,7 +216,10 @@
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         document.getElementById('theme-color-meta').content = isDark ? '#4b5982' : '#f1e1cd';
     }
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        document.getElementById('theme-color-meta').content = '#4b5982';
+    }
 </script>
 
 </body>
