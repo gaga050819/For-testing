@@ -3,245 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DNL Vote — Компактне Голосування</title>
+    <title>DNL Vote — Live Результати</title>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --blur: blur(20px);
-            --border: 1px solid rgba(255, 255, 255, 0.2);
+            --glass: rgba(30, 30, 35, 0.6);
+            --blur: blur(25px);
+            --border: 1px solid rgba(255, 255, 255, 0.1);
             --text: #ffffff;
-            --accent: #0071e3; /* Apple Blue */
+            --accent: #0A84FF; /* Apple Blue Dark Mode */
         }
 
-        /* Заборона прокрутки для всього екрану */
+        /* Фіксуємо екран і робимо крутий плавний фон */
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100vh;
             overflow: hidden; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #000;
             color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
+            /* Новий надійний анімований фон */
+            background: linear-gradient(-45deg, #1a0b2e, #4b134f, #13294b, #001528);
+            background-size: 400% 400%;
+            animation: gradientBg 15s ease infinite;
         }
 
-        /* Анімований рідкий фон */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 150%; height: 150%;
-            background: radial-gradient(circle at 20% 30%, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
-            animation: liquidBg 15s ease infinite;
-            z-index: -1;
-            filter: blur(50px);
+        @keyframes gradientBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        @keyframes liquidBg {
-            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
-            50% { transform: translate(10%, 10%) rotate(10deg); }
-        }
-
-        /* Головна скляна картка (фіксована висота) */
+        /* Головна картка: тепер має мінімальну висоту, щоб не стискатися */
         .main-container {
             background: var(--glass);
             backdrop-filter: var(--blur);
             -webkit-backdrop-filter: var(--blur);
             border: var(--border);
-            border-radius: 30px;
-            width: 90%;
-            max-width: 380px;
-            /* Обмежуємо висоту, щоб влізло на екран */
-            height: auto;
-            max-height: 90vh; 
+            border-radius: 25px;
+            width: 95%;
+            max-width: 500px;
+            min-height: 380px; /* Не дає їй зменшуватись */
             padding: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; align-items: center;
             box-sizing: border-box;
-            overflow: hidden; /* Внутрішньої прокрутки теж немає */
         }
 
-        h1 {
-            font-size: 1.2rem;
-            margin: 0 0 15px 0;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        h1 { font-size: 1.3rem; margin: 0 0 10px 0; font-weight: 700; text-align: center; }
 
-        /* Блок авторизації */
-        #auth-section {
-            width: 100%;
-            text-align: center;
-            margin-top: auto; margin-bottom: auto; /* Центруємо по вертикалі */
-        }
-
-        /* Кнопка Google */
+        /* Авторизація */
+        #auth-section { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; width: 100%; }
+        
         .btn-google {
-            background: rgba(255,255,255,0.9);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; box-sizing: border-box;
+            background: #fff; color: #000; border: none; padding: 14px 20px;
+            border-radius: 15px; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
         }
-        .btn-google:hover { background: #fff; transform: scale(1.02); }
+        .btn-google:hover { transform: scale(1.02); }
 
-        /* Блок голосування (ховається) */
-        #vote-section {
-            width: 100%;
-            display: none; /* Показується JS */
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between; /* Розтягуємо елементи */
-        }
+        /* Блок голосування */
+        #vote-section { display: none; flex-direction: column; width: 100%; height: 100%; }
+        #user-info { font-size: 0.8rem; opacity: 0.6; margin: 0 0 15px 0; text-align: center; }
 
-        #user-info {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            margin: 0 0 15px 0;
-            text-align: center;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Якщо довгий email */
-        }
-
-        /* Сітка з подіями (В ОДИН РЯД) */
+        /* Сітка з фото (3 в ряд) */
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* ТРИ рівні колонки */
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px; width: 100%; margin-bottom: 15px;
         }
 
-        /* Картка події (маленька плиткa) */
         .event-tile {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            display: flex; flex-direction: column; align-items: center;
+            border-radius: 15px; padding: 10px;
+            text-align: center; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
         }
 
-        /* Ефект вибору плитки */
         .event-tile:hover { background: rgba(255, 255, 255, 0.1); }
-        .event-tile.selected {
-            border-color: var(--accent);
-            background: rgba(0, 113, 227, 0.2);
-            box-shadow: 0 0 15px rgba(0, 113, 227, 0.5);
-        }
+        .event-tile.selected { border-color: var(--accent); background: rgba(10, 132, 255, 0.2); box-shadow: 0 0 15px rgba(10, 132, 255, 0.4); }
+        .event-tile.disabled { opacity: 0.7; cursor: default; } /* Стан після голосування */
 
-        /* Маленькі фотографії */
         .event-tile img {
-            width: 100%;
-            aspect-ratio: 1/1; /* Завжди квадратні */
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 5px;
+            width: 100%; aspect-ratio: 1/1; object-fit: cover;
+            border-radius: 10px; margin-bottom: 8px;
         }
 
-        .event-tile h3 {
-            font-size: 0.7rem;
-            margin: 0;
-            font-weight: 600;
-            line-height: 1.1;
-            /* Обрізаємо текст, якщо задовгий, щоб не ламав лейаут */
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        .event-tile h3 { font-size: 0.75rem; margin: 0 0 5px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Лічильник голосів (Живий) */
+        .live-count {
+            background: rgba(255,255,255,0.15); padding: 4px 8px;
+            border-radius: 10px; font-size: 0.8rem; font-weight: bold; width: 80%;
         }
 
-        /* Велика кнопка підтвердження внизу */
+        /* Кнопка та статус */
         #submit-vote-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.3);
+            width: 100%; padding: 15px; background: var(--accent); color: white;
+            border: none; border-radius: 15px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: 0.3s; margin-top: auto;
         }
-
-        #submit-vote-btn:disabled {
-            background: #444;
-            color: #888;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none !important;
-        }
-
-        #submit-vote-btn:not(:disabled):hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.5);
-        }
-
-        /* Статус (вже проголосував) */
-        #status-msg {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
+        #submit-vote-btn:disabled { background: rgba(255,255,255,0.1); color: #888; cursor: not-allowed; }
+        #status-msg { font-size: 1rem; font-weight: 600; text-align: center; margin-top: 15px; display: none; color: #32d74b; }
 
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        <h1>🗳️ Вибір Події DNL</h1>
+        <h1>📊 Live Голосування DNL</h1>
 
         <div id="auth-section">
             <button class="btn-google" id="btn-google">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G" width="18">
-                Увійти через Google
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G" width="20">
+                Увійти для голосування
             </button>
         </div>
 
         <div id="vote-section">
             <p id="user-info"></p>
 
-            <div class="events-grid">
+            <div class="events-grid" id="events-grid">
                 <div class="event-tile" onclick="selectEvent('Кіноніч', this)">
-                    <img src="https://via.placeholder.com/150" alt="Подія 1">
+                    <img src="https://via.placeholder.com/150" alt="Кіно">
                     <h3>Кіноніч у ліцеї</h3>
+                    <div class="live-count" id="count-kino">0 👤</div>
                 </div>
 
                 <div class="event-tile" onclick="selectEvent('Турнір FIFA', this)">
-                    <img src="https://via.placeholder.com/150" alt="Подія 2">
+                    <img src="https://via.placeholder.com/150" alt="FIFA">
                     <h3>Турнір з FIFA 24</h3>
+                    <div class="live-count" id="count-fifa">0 👤</div>
                 </div>
 
                 <div class="event-tile" onclick="selectEvent('Ярмарок', this)">
-                    <img src="https://via.placeholder.com/150" alt="Подія 3">
+                    <img src="https://via.placeholder.com/150" alt="Ярмарок">
                     <h3>Благодійний ярмарок</h3>
+                    <div class="live-count" id="count-yarmarok">0 👤</div>
                 </div>
             </div>
 
-            <button id="submit-vote-btn" onclick="finalSubmitVote()" disabled>Підтвердити голос</button>
-            <p id="status-msg"></p>
+            <button id="submit-vote-btn" onclick="finalSubmitVote()" disabled>Оберіть подію вище</button>
+            <p id="status-msg">✅ Твій голос враховано!</p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        // ДОДАНО onValue для живого підрахунку!
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ТВОЇ КЛЮЧІ FIREBASE (ЯКІ ТИ СКИНУВ)
         const firebaseConfig = {
             apiKey: "AIzaSyCyRjdbRjQonfqNX-hY1XSdM2og2xeyngs",
             authDomain: "golosovanna.firebaseapp.com",
@@ -257,86 +172,92 @@
         const db = getDatabase();
         const provider = new GoogleAuthProvider();
 
-        // Елементи DOM
         const authSection = document.getElementById('auth-section');
         const voteSection = document.getElementById('vote-section');
         const userInfoText = document.getElementById('user-info');
         const submitBtn = document.getElementById('submit-vote-btn');
         const statusMsg = document.getElementById('status-msg');
 
-        // Змінні для зберігання вибору
         let selectedCandidate = null;
+        let hasVoted = false; // Блокувальник, якщо вже проголосував
 
-        // Логіка входу
+        // --- ЛОГІКА ЖИВОГО ПІДРАХУНКУ (REAL-TIME) ---
+        const votesRef = ref(db, 'votes');
+        onValue(votesRef, (snapshot) => {
+            // Рахуємо голоси з усієї бази
+            let counts = { 'Кіноніч': 0, 'Турнір FIFA': 0, 'Ярмарок': 0 };
+            
+            snapshot.forEach((child) => {
+                let voteData = child.val();
+                if (voteData.candidateId && counts[voteData.candidateId] !== undefined) {
+                    counts[voteData.candidateId]++;
+                }
+            });
+
+            // Оновлюємо цифри на екрані
+            document.getElementById('count-kino').innerText = counts['Кіноніч'] + ' 👤';
+            document.getElementById('count-fifa').innerText = counts['Турнір FIFA'] + ' 👤';
+            document.getElementById('count-yarmarok').innerText = counts['Ярмарок'] + ' 👤';
+        });
+        // ---------------------------------------------
+
         document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
 
-        // Слідкуємо за станом користувача
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Користувач увійшов
                 authSection.style.display = 'none';
                 voteSection.style.display = 'flex';
-                userInfoText.innerText = user.email;
+                userInfoText.innerText = "Увійшов як: " + user.email;
                 
-                // Перевірка, чи вже є голос у базі (захист від накрутки)
+                // Перевіряємо, чи вже голосував
                 const snapshot = await get(ref(db, 'votes/' + user.uid));
                 if (snapshot.exists()) {
                     showAlreadyVotedState();
                 }
             } else {
-                // Користувач вийшов
-                authSection.style.display = 'block';
+                authSection.style.display = 'flex';
                 voteSection.style.display = 'none';
             }
         });
 
-        // 1. Функція вибору плитки (локально, без запису в базу)
         window.selectEvent = (name, element) => {
-            // Знімаємо виділення з усіх інших
+            if (hasVoted) return; // Якщо вже голосував, кліки не працюють
+
             document.querySelectorAll('.event-tile').forEach(tile => tile.classList.remove('selected'));
-            // Виділяємо поточну
             element.classList.add('selected');
             
             selectedCandidate = name;
-            submitBtn.disabled = false; // Активуємо кнопку "Підтвердити"
+            submitBtn.disabled = false;
             submitBtn.innerText = `Голосувати за: ${name}`;
+            submitBtn.style.background = "#0A84FF";
+            submitBtn.style.color = "#fff";
         };
 
-        // 2. Функція фінальної відправки голосу в Firebase
         window.finalSubmitVote = async () => {
             const user = auth.currentUser;
             if (!user || !selectedCandidate) return;
 
-            submitBtn.disabled = true;
             submitBtn.innerText = "Відправка...";
+            submitBtn.disabled = true;
 
             try {
-                // Записуємо в базу під ID користувача (ваші Rules це дозволяють)
                 await set(ref(db, 'votes/' + user.uid), {
                     candidateId: selectedCandidate,
                     timestamp: Date.now()
                 });
-                // Успіх
                 showAlreadyVotedState();
             } catch (e) {
-                console.error(e);
-                alert("Помилка запису. Спробуйте ще раз.");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Підтвердити голос";
+                alert("Помилка запису. Можливо, ви вже голосували.");
+                submitBtn.innerText = "Оберіть подію вище";
             }
         };
 
-        // Стан "Вже проголосував"
         function showAlreadyVotedState() {
-            // Ховаємо сітку та кнопку
-            document.querySelector('.events-grid').style.display = 'none';
-            submitBtn.style.display = 'none';
-            userInfoText.style.display = 'none';
-
-            // Показуємо повідомлення
-            statusMsg.style.display = 'block';
-            statusMsg.innerHTML = "🎉 Твій голос враховано!<br><span style='font-size:0.8rem; opacity:0.7;'>Дякуємо за участь.</span>";
-            statusMsg.style.color = "#4cd964"; // Green
+            hasVoted = true;
+            // Робимо плитки напівпрозорими, але НЕ ховаємо їх! (Щоб бачити лічильники)
+            document.querySelectorAll('.event-tile').forEach(tile => tile.classList.add('disabled'));
+            submitBtn.style.display = 'none'; // Ховаємо кнопку
+            statusMsg.style.display = 'block'; // Показуємо галочку
         }
     </script>
 </body>
