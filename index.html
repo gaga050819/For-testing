@@ -61,7 +61,7 @@
             margin-bottom: 50px;
         }
 
-        .input-group { margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; }
         
         label {
             display: block;
@@ -176,7 +176,7 @@
         btn.disabled = true;
         btn.innerText = '⏳ Надсилаємо...';
 
-        const message = `💡 НОВА ІДЕЯ:\n👤 Від: ${name}\n📝 Текст: ${idea}`;
+        const message = `💡 НОВА ЗАЯВКА:\n👤 Від: ${name}\n📝 Текст: ${idea}`;
 
         try {
             const response = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
@@ -189,7 +189,7 @@
             });
 
             if (response.ok) {
-                alert('✅ Твою ідею отримано! Дякуємо за активність.');
+                alert('✅ Твою зявку отримано! Дякуємо за активність.');
                 document.getElementById('userName').value = '';
                 document.getElementById('userIdea').value = '';
             } else {
@@ -199,7 +199,7 @@
             alert('❌ Немає з\'єднання з сервером.');
         } finally {
             btn.disabled = false;
-            btn.innerText = '📨 Надіслати ідею';
+            btn.innerText = '📨 Надіслати заявку';
         }
     }
 </script>
