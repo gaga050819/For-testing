@@ -299,7 +299,9 @@ import {
     getRedirectResult,  
     signOut, 
     GoogleAuthProvider, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    browserLocalPersistence,
+    setPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -318,22 +320,19 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-getRedirectResult(auth).then((result) => {
-    if (result && result.user) {
-        if (!result.user.email.endsWith('@gmail.com')) {
-            signOut(auth);
-            alert('❌ Використовуйте лише @gmail.com акаунт');
+setPersistence(auth, browserLocalPersistence)
+    .then(() => getRedirectResult(auth))
+    .then((result) => {
+        if (result?.user && !result.user.email.endsWith('@gmail.com')) {
+            signOut(auth).then(() => alert('❌ Тільки @gmail.com'));
         }
-    }
-}).catch((error) => {
-    console.error(error);
+    }).catch(console.error);
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#google-btn');
+    if (btn) signInWithRedirect(auth, provider);
+    if (e.target.id === 'logout-btn') signOut(auth);
 });
-
-document.getElementById('google-btn').onclick = () => {
-    signInWithRedirect(auth, provider);
-};
-
-document.getElementById('logout-btn').onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, (user) => {
     const loginBlock = document.getElementById('login-block');
@@ -347,89 +346,70 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('user-photo').src = user.photoURL || '';
         document.getElementById('user-name').textContent = user.displayName || user.email;
 
-        const checkRef = ref(db, 'registrations/' + user.uid);
-        onValue(checkRef, (snapshot) => {
+        onValue(ref(db, 'registrations/' + user.uid), (snapshot) => {
+            const inputs = document.getElementById('form-inputs');
+            const success = document.getElementById('form-success');
             if (snapshot.exists()) {
-                document.getElementById('form-inputs').style.display = 'none';
-                document.getElementById('form-success').style.display = 'block';
-                document.getElementById('form-success').textContent = "✅ Ви вже зареєстровані!";
+                inputs.style.display = 'none';
+                success.style.display = 'block';
+                success.textContent = "✅ Ви вже зареєстровані!";
             } else {
-                document.getElementById('form-inputs').style.display = 'block';
-                document.getElementById('form-success').style.display = 'none';
+                inputs.style.display = 'block';
+                success.style.display = 'none';
             }
         });
     } else {
+        appBlock.style.display = 'none';
+        loginBlock.style.display = 'block';
+
         if (isTelegram && isIOS) {
             loginBlock.innerHTML = `
-                <div style="padding: 10px; text-align: center;">
+                <div style="text-align: center; padding: 10px;">
                     <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
-                    <h3 style="color: #e11d48; margin-top: 0;">Відкрийте у Safari</h3>
-                    <p style="font-size: 0.9rem; opacity: 0.8; line-height: 1.4;">
-                        Вхід Google не працює всередині Telegram на iPhone.
-                    </p>
-                    <div style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; text-align: left; margin: 15px 0; border: 1px dashed var(--text);">
-                        <p style="font-weight: bold; margin-bottom: 5px; font-size: 0.85rem;">Що робити:</p>
-                        <ol style="font-size: 0.8rem; padding-left: 20px; margin: 0;">
-                            <li>Натисніть <b>•••</b> (вгорі справа)</li>
-                            <li>Оберіть <b>"Відкрити в Safari"</b></li>
-                        </ol>
+                    <h3 style="color: #e11d48; margin: 0 0 10px;">Відкрийте у Safari</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Вхід Google не працює всередині Telegram на iOS.</p>
+                    <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; text-align: left; margin: 20px 0; border: 1px dashed var(--text);">
+                        <b>Інструкція:</b><br>
+                        1. Натисніть <b>•••</b> вгорі праворуч.<br>
+                        2. Оберіть <b>"Відкрити в Safari"</b>.
                     </div>
-                    <button onclick="location.reload()" class="google-btn" style="width: 100%; justify-content: center; font-size: 0.9rem;">
-                        🔄 Я вже в Safari (Оновити)
-                    </button>
+                    <button onclick="location.reload()" class="google-btn" style="width:100%; justify-content: center;">🔄 Оновити сторінку</button>
                 </div>`;
         } else {
-            // Повертаємо початковий вигляд для інших пристроїв
             loginBlock.innerHTML = `
                 <h2>🔐 Увійдіть щоб продовжити</h2>
                 <p>Для реєстрації потрібен Gmail-акаунт</p>
                 <button class="google-btn" id="google-btn">
-                    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:20px; height:20px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                     Увійти через Google
-                </button>
-                <p style="font-size:0.8rem;opacity:0.5;margin-top:15px;">Приймаються лише @gmail.com акаунти</p>
-            `;
-            // Переприв'язка кліку після innerHTML
-            document.getElementById('google-btn').onclick = () => signInWithRedirect(auth, provider);
+                </button>`;
         }
-        loginBlock.style.display = 'block';
-        appBlock.style.display = 'none';
     }
 });
 
 window.sendForm = async () => {
     const user = auth.currentUser;
     if (!user) return;
-    
     const name = document.getElementById('f-name').value.trim();
     const surname = document.getElementById('f-surname').value.trim();
     const cls = document.getElementById('f-class').value.trim();
     const btn = document.getElementById('submit-btn');
 
-    if (!name || !surname || !cls) {
-        alert('Будь ласка, заповніть всі поля');
-        return;
-    }
+    if (!name || !surname || !cls) return alert('Заповніть всі поля');
 
     btn.disabled = true;
     btn.textContent = "Надсилання...";
-
     try {
         await set(ref(db, 'registrations/' + user.uid), {
-            name, 
-            surname, 
-            class: cls, 
-            email: user.email,
-            time: Date.now()
+            name, surname, class: cls, email: user.email, time: Date.now()
         });
-    } catch (error) {
-        alert("Помилка: " + error.message);
+    } catch (e) {
+        alert("Помилка: " + e.message);
         btn.disabled = false;
         btn.textContent = "📨 Надіслати заявку";
     }
 };
 </script>
-<script src="config.js"></script>
 <script>document.getElementById("version").textContent = SITE_VERSION;</script>
 </body>
 </html>
