@@ -320,13 +320,25 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
+provider.setCustomParameters({
+    prompt: 'select_account'
+});
+
 setPersistence(auth, browserLocalPersistence)
-    .then(() => getRedirectResult(auth))
+    .then(() => {})
+    .catch(console.error);
+
+getRedirectResult(auth)
     .then((result) => {
-        if (result?.user && !result.user.email.endsWith('@gmail.com')) {
-            signOut(auth).then(() => alert('❌ Тільки @gmail.com'));
+        if (result?.user) {
+            if (!result.user.email.endsWith('@gmail.com')) {
+                signOut(auth).then(() => alert('❌ Тільки @gmail.com'));
+            }
         }
-    }).catch(console.error);
+    })
+    .catch((e) => {
+        console.log("Redirect result error:", e);
+    });
 
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('#google-btn');
@@ -335,6 +347,8 @@ document.addEventListener('click', (e) => {
 });
 
 onAuthStateChanged(auth, (user) => {
+    console.log("AUTH STATE:", user);
+
     const loginBlock = document.getElementById('login-block');
     const appBlock = document.getElementById('app-block');
     const isTelegram = /Telegram/i.test(navigator.userAgent);
