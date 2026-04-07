@@ -241,16 +241,20 @@ footer { width: 100%; padding: 40px 20px; text-align: center; margin-top: auto; 
             <div class="form-row">
                 <div class="form-field">
                     <label>Ім'я</label>
-                    <input type="text" id="f-name" placeholder="Наприклад: Михайло">
+                    <input type="text" id="f-name" placeholder="Маркіян">
                 </div>
                 <div class="form-field">
                     <label>Прізвище</label>
-                    <input type="text" id="f-surname" placeholder="Наприклад: Дякович">
+                    <input type="text" id="f-surname" placeholder="Іванців">
                 </div>
             </div>
             <div class="form-field">
                 <label>Клас</label>
-                <input type="text" id="f-class" placeholder="Наприклад: 11-А">
+                <input type="text" id="f-class" placeholder="11-А">
+            </div>
+            <div class="form-field">
+                <label>Інформація про себе або ідея</label>
+                <textarea id="f-text" placeholder="Розкажіть про себе або опишіть вашу ідею..."></textarea>
             </div>
             <button class="action-btn" onclick="sendForm()">📨 Надіслати заявку</button>
             <div class="success-msg" id="form-success">✅ Дякуємо! Вашу заявку отримано.</div>
@@ -302,9 +306,10 @@ const firebaseConfig = {
     appId: "1:869952269827:web:c15cf5553e2e43a2062836"
 };
 
+// Ініціалізуємо Firebase безпечніше (передаємо app у функції)
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getDatabase();
+const auth = getAuth(app);
+const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
 document.getElementById('google-btn').onclick = () => {
@@ -313,7 +318,7 @@ document.getElementById('google-btn').onclick = () => {
             signOut(auth);
             alert('❌ Використовуйте лише @gmail.com акаунт');
         }
-    }).catch(e => alert('Помилка: ' + e.message));
+    }).catch(e => alert('Помилка входу: ' + e.message));
 };
 
 document.getElementById('logout-btn').onclick = () => signOut(auth);
@@ -330,9 +335,10 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-window.sendForm = () => {
+window.sendForm = async () => {
     const user = auth.currentUser;
     if (!user) return;
+    
     const name = document.getElementById('f-name').value.trim();
     const surname = document.getElementById('f-surname').value.trim();
     const cls = document.getElementById('f-class').value.trim();
@@ -343,19 +349,29 @@ window.sendForm = () => {
         return;
     }
 
-    push(ref(db, 'registrations'), {
-        name, surname, class: cls, text,
-        email: user.email,
-        time: Date.now()
-    }).then(() => {
+    try {
+        await push(ref(db, 'registrations'), {
+            name, 
+            surname, 
+            class: cls, 
+            text,
+            email: user.email,
+            time: Date.now()
+        });
+        
         document.getElementById('f-name').value = '';
         document.getElementById('f-surname').value = '';
         document.getElementById('f-class').value = '';
         document.getElementById('f-text').value = '';
+        
         const msg = document.getElementById('form-success');
         msg.style.display = 'block';
         setTimeout(() => msg.style.display = 'none', 4000);
-    });
+        
+    } catch (error) {
+        console.error("Помилка запису в базу:", error);
+        alert("Помилка при надсиланні: " + error.message);
+    }
 };
 </script>
 
