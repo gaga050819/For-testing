@@ -302,7 +302,7 @@ const firebaseConfig = {
     appId: "1:869952269827:web:c15cf5553e2e43a2062836"
 };
 
-// Ініціалізуємо Firebase безпечніше (передаємо app у функції)
+// Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -338,9 +338,8 @@ window.sendForm = async () => {
     const name = document.getElementById('f-name').value.trim();
     const surname = document.getElementById('f-surname').value.trim();
     const cls = document.getElementById('f-class').value.trim();
-    const text = document.getElementById('f-text').value.trim();
 
-    if (!name || !surname || !cls || !text) {
+    if (!name || !surname || !cls) {
         alert('Будь ласка, заповніть всі поля');
         return;
     }
@@ -350,7 +349,6 @@ window.sendForm = async () => {
             name, 
             surname, 
             class: cls, 
-            text,
             email: user.email,
             time: Date.now()
         });
