@@ -289,8 +289,6 @@ if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('dark');
     themeMeta.content = '#4b5982';
 }
-</script>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { 
@@ -326,13 +324,9 @@ getRedirectResult(auth).then((result) => {
         }
     }
 }).catch((error) => {
-    console.error("Помилка авторизації:", error);
-    if (error.code === 'auth/internal-error') {
-        alert("Будь ласка, відкрийте посилання в основному браузері Safari/Chrome");
-    }
+    console.error(error);
 });
 
-// 2. Кнопка входу (тепер через Redirect)
 document.getElementById('google-btn').onclick = () => {
     signInWithRedirect(auth, provider);
 };
@@ -340,9 +334,14 @@ document.getElementById('google-btn').onclick = () => {
 document.getElementById('logout-btn').onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, (user) => {
+    const loginBlock = document.getElementById('login-block');
+    const appBlock = document.getElementById('app-block');
+    const isTelegram = /Telegram/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     if (user && user.email.endsWith('@gmail.com')) {
-        document.getElementById('login-block').style.display = 'none';
-        document.getElementById('app-block').style.display = 'block';
+        loginBlock.style.display = 'none';
+        appBlock.style.display = 'block';
         document.getElementById('user-photo').src = user.photoURL || '';
         document.getElementById('user-name').textContent = user.displayName || user.email;
 
@@ -358,8 +357,28 @@ onAuthStateChanged(auth, (user) => {
             }
         });
     } else {
-        document.getElementById('login-block').style.display = 'block';
-        document.getElementById('app-block').style.display = 'none';
+        if (isTelegram && isIOS) {
+            loginBlock.innerHTML = `
+                <div style="padding: 10px; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
+                    <h3 style="color: #e11d48; margin-top: 0;">Відкрийте у Safari</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.8; line-height: 1.4;">
+                        Вхід Google не працює всередині Telegram на iPhone.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; text-align: left; margin: 15px 0; border: 1px dashed var(--text);">
+                        <p style="font-weight: bold; margin-bottom: 5px; font-size: 0.85rem;">Що робити:</p>
+                        <ol style="font-size: 0.8rem; padding-left: 20px; margin: 0;">
+                            <li>Натисніть <b>•••</b> (вгорі справа)</li>
+                            <li>Оберіть <b>"Відкрити в Safari"</b></li>
+                        </ol>
+                    </div>
+                    <button onclick="location.reload()" class="google-btn" style="width: 100%; justify-content: center; font-size: 0.9rem;">
+                        🔄 Я вже в Safari (Оновити)
+                    </button>
+                </div>`;
+        }
+        loginBlock.style.display = 'block';
+        appBlock.style.display = 'none';
     }
 });
 
@@ -395,7 +414,6 @@ window.sendForm = async () => {
     }
 };
 </script>
-
 <script src="config.js"></script>
 <script>document.getElementById("version").textContent = SITE_VERSION;</script>
 </body>
