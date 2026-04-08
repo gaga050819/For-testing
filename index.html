@@ -380,7 +380,6 @@ async function sendBug() {
 document.addEventListener('keydown', e => { if(e.key==='Escape'){closeBug();} });
 async function submitForm(event) {
     event.preventDefault(); 
-    const btn = document.querySelector('.submit-btn');
     
     const formData = {
         firstName: document.getElementById('firstName').value,
@@ -395,9 +394,9 @@ async function submitForm(event) {
     localStorage.setItem('pending_registration', JSON.stringify(formData));
     localStorage.setItem('my_payment_id', txId);
 
-    alert(`Код вашої заявки: ${txId}\nЙого буде автоматично додано до коментаря. Оплатіть 10 грн для завершення реєстрації.`);
+    alert(`Ваш код реєстрації: ${txId}\nЙого додано в коментар. Після оплати 10 грн реєстрація завершиться автоматично.`);
     
-    window.location.href = `https://donatello.ua/gaga050819?message=${txId}`;
+    window.location.href = `https://donatello.to/gaga050819?message=${txId}`;
 }
 </script>
 <script src="config.js"></script>
