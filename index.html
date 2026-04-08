@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060369291416814" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f1e1cd" id="theme-color-meta">
+<title>Реєстрація | Учнівське самоврядування</title>
+<style>
+#versionBox {
+  position: absolute;
+  bottom: calc(15px + env(safe-area-inset-bottom));
+  left: 20px;
+  font-size: 13px;
+  opacity: 0.6;
+  color: var(--text);
+}
+:root {
+    --bg: #f1e1cd;
+    --text: #4b5982;
+    --card-bg: rgba(255,255,255,0.3);
+    --card-border: rgba(255,255,255,0.5);
+    --tr: all 0.4s cubic-bezier(0.25,0.8,0.25,1);
+}
+*,*::before,*::after { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, var(--bg), #e5d2b8, var(--bg));
+    color: var(--text);
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh;
+    transition: background 0.8s ease, color 0.5s ease;
+    overflow-x: hidden;
+}
+body.dark {
+    --bg: #4b5982;
+    --text: #f1e1cd;
+    --card-bg: rgba(241,225,205,0.1);
+    --card-border: rgba(241,225,205,0.2);
+    background: linear-gradient(180deg,#4b5982,#353f5c,#4b5982) !important;
+}
+.controls {
+position: fixed; top: 20px; left: 20px;
+z-index: 1000; display: flex; flex-direction: column; gap: 15px;
+}
+#themeBtn, #menuBtn {
+padding: 12px; border-radius: 50px;
+border: 1px solid var(--card-border);
+background: var(--card-bg); backdrop-filter: blur(15px);
+color: inherit; cursor: pointer; font-weight: 600;
+box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+transition: var(--tr);
+display: flex; justify-content: center; align-items: center;
+}
+#menuBtn { width: 50px; height: 50px; font-size: 22px; }
+@media (hover:hover) {
+#themeBtn:hover, #menuBtn:hover { transform: scale(1.1); background: rgba(255,255,255,0.5); }
+}
+.sidebar {
+    position: fixed; top: 0; left: -100%;
+    width: 100%; max-width: 300px;
+    height: 100vh; height: -webkit-fill-available;
+    background: var(--card-bg); backdrop-filter: blur(40px);
+    border-right: 1px solid var(--card-border);
+    z-index: 1001; transition: var(--tr);
+    display: flex; flex-direction: column;
+    padding: 100px 30px 0;
+    box-shadow: 15px 0 50px rgba(0,0,0,0.2);
+    opacity: 0; visibility: hidden;
+}
+.sidebar.open { left: 0; opacity: 1; visibility: visible; }
+.sidebar a {
+text-decoration: none; padding: 18px 25px; margin-bottom: 20px;
+border-radius: 25px; background: rgba(255,255,255,0.1);
+border: 1px solid var(--card-border);
+color: inherit; font-weight: 700; font-size: 1.2rem; transition: var(--tr);
+}
+@media (hover:hover) {
+.sidebar a:hover { transform: translateX(10px); background: rgba(255,255,255,0.3); }
+}
+#closeBtn {
+position: absolute; top: 30px; right: 30px;
+background: none; border: none; font-size: 28px; color: inherit; cursor: pointer;
+}
+header {
+width: 90%; max-width: 1200px; margin: 40px 0;
+display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+}
+.main-title {
+grid-column: 2;
+font-size: clamp(2.5rem,8vw,4rem);
+font-weight: 900; text-align: center; margin: 0;
+}
+.logo {
+justify-self: end;
+width: clamp(50px,10vw,80px); height: clamp(50px,10vw,80px);
+border-radius: 50%; border: 3px solid currentColor;
+display: flex; justify-content: center; align-items: center;
+font-weight: bold; overflow: hidden;
+}
+.container { width: 95%; max-width: 1000px; }
+.card {
+display: flex; gap: 30px; border-radius: 40px; padding: 30px;
+background: var(--card-bg); backdrop-filter: blur(25px);
+border: 1px solid var(--card-border);
+margin-bottom: 30px; transition: var(--tr); position: relative;
+}
+
+/* Форма стилі */
+.form-wrapper {
+    flex-direction: column;
+    max-width: 650px;
+    margin: 0 auto 30px auto;
+}
+.form-title {
+    text-align: center;
+    margin: 0 0 25px 0;
+    font-size: 2rem;
+}
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1.05rem;
+    padding-left: 5px;
+}
+.form-control {
+    width: 100%;
+    border-radius: 20px;
+    border: 1.5px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--text);
+    padding: 16px 20px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    outline: none;
+    transition: var(--tr);
+}
+body.dark .form-control {
+    background: rgba(0, 0, 0, 0.2);
+}
+.form-control::placeholder {
+    color: var(--text);
+    opacity: 0.5;
+}
+.form-control:focus {
+    border-color: var(--text);
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+select.form-control {
+    appearance: none;
+    cursor: pointer;
+}
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    border: none;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--tr);
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+    opacity: 0.9;
+}
+
+#scrollTopBtn {
+position: fixed; bottom: 30px; left: 30px;
+width: 50px; height: 50px; border-radius: 50%;
+border: 1px solid var(--card-border); background: var(--card-bg);
+backdrop-filter: blur(15px); color: inherit; font-size: 22px;
+cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+transition: var(--tr); opacity: 0; visibility: hidden; z-index: 999;
+}
+#scrollTopBtn.visible { opacity: 1; visibility: visible; }
+#scrollTopBtn:hover { transform: translateY(-3px); }
+footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: auto; }
+.social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 25px; margin-bottom: 35px; }
+.social-links a {
+text-decoration: none; color: inherit; font-weight: 700;
+font-size: 1rem; letter-spacing: 1px; transition: var(--tr);
+}
+.social-links a:hover { opacity: 0.7; }
+
+/* Bug report */
+#bugTrigger {
+background: none; border: none; cursor: pointer;
+font-size: 0.8rem; font-weight: 600; opacity: 0.5;
+color: var(--text); display: block; margin: 10px auto 0;
+}
+#bugTrigger:hover { opacity: 1; }
+#bugModal {
+display: none; position: fixed; inset: 0;
+background: rgba(0,0,0,0.6); z-index: 9500;
+align-items: flex-end; justify-content: center;
+backdrop-filter: blur(8px);
+}
+#bugModal.open { display: flex; }
+.bug-box {
+width: 100%; max-width: 500px;
+background: var(--bg); border-radius: 30px 30px 0 0;
+padding: 30px 28px calc(35px + env(safe-area-inset-bottom));
+box-shadow: 0 -20px 60px rgba(0,0,0,0.3);
+animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.bug-box h3 { margin: 0 0 8px; font-size: 1.4rem; font-weight: 800; }
+.bug-box p { margin: 0 0 20px; font-size: 0.95rem; opacity: 0.7; }
+.bug-box textarea {
+width: 100%; border-radius: 18px; border: 1.5px solid var(--card-border);
+background: var(--card-bg); color: var(--text);
+padding: 16px; font-size: 1rem; font-family: inherit;
+resize: none; outline: none; min-height: 120px;
+}
+.bug-box-btns { display: flex; gap: 12px; margin-top: 18px; }
+.bug-send {
+flex: 2; padding: 16px; border-radius: 18px; border: none;
+background: var(--text); color: var(--bg);
+font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+.bug-send:disabled { opacity: 0.5; }
+.bug-cancel {
+flex: 1; padding: 16px; border-radius: 18px;
+border: 1.5px solid var(--card-border); background: none;
+color: var(--text); font-size: 1rem; cursor: pointer;
+}
+
+@media (max-width: 768px) {
+.controls { flex-direction: row; width: calc(100% - 40px); justify-content: space-between; top: 15px; }
+#themeBtn, #menuBtn { padding: 10px 15px; height: 45px; font-size: 14px; }
+#menuBtn { width: 45px; padding: 0; position: fixed; right: 20px; left: auto; }
+header { display: flex; flex-direction: column-reverse; gap: 15px; margin-top: 70px; }
+.main-title { font-size: 2.2rem; }
+.logo { align-self: center; }
+.card { padding-top: 40px; }
+}
+</style>
+</head>
+<body>
+
+<div id="bugModal" onclick="if(event.target===this)closeBug()">
+    <div class="bug-box">
+        <h3>🐞 Повідомити про баг 🐞</h3>
+        <p>Опишіть проблему на сайті</p>
+        <textarea id="bugText" placeholder="Наприклад: кнопка не натискається..."></textarea>
+        <div class="bug-box-btns">
+            <button class="bug-cancel" onclick="closeBug()">Скасувати</button>
+            <button class="bug-send" onclick="sendBug()">📨 Надіслати</button>
+        </div>
+    </div>
+</div>
+
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button>
+<div class="controls">
+    <button id="themeBtn" onclick="toggleTheme()">🌓 Тема</button>
+    <button id="menuBtn" onclick="toggleMenu()">🏠</button>
+</div>
+<div class="sidebar" id="sidebar">
+    <button id="closeBtn" onclick="toggleMenu()">✖</button>
+    <a href="index.html">Головна</a>
+    <a href="news.html">Новини</a>
+    <a href="past_events.html">Проєкти</a>
+    <a href="about.html">Про нас</a>
+    <a href="skrynkaidey.html">Скринька ідей</a>
+    <a href="Konkyrs.html">Реєстрація на конкурс</a>
+    <div id="versionBox">Версія: <span id="version"></span></div>
+</div>
+<header>
+    <h1 class="main-title">Анкета</h1>
+    <div class="logo">
+        <img src="Logo1variant.png" alt="Логотип" style="width:120%;height:120%;object-fit:cover;">
+    </div>
+</header>
+
+<div class="container">
+    <div class="card form-wrapper">
+        <h2 class="form-title">Реєстрація на спорт</h2>
+        <form id="sportForm" onsubmit="submitForm(event)">
+            <div class="form-group">
+                <label for="firstName">Ім'я</label>
+                <input type="text" id="firstName" class="form-control" placeholder="Введіть ваше ім'я" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="lastName">Прізвище</label>
+                <input type="text" id="lastName" class="form-control" placeholder="Введіть ваше прізвище" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="studentClass">Клас</label>
+                <input type="text" id="studentClass" class="form-control" placeholder="Наприклад: 10-А" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sportType">Вид спорту</label>
+                <select id="sportType" class="form-control" required>
+                    <option value="" disabled selected>Оберіть вид спорту...</option>
+                    <option value="Футбол">⚽ Футбол</option>
+                    <option value="Волейбол">🏐 Волейбол</option>
+                    <option value="Баскетбол">🏀 Баскетбол</option>
+                    <option value="Настільний теніс">🏓 Настільний теніс</option>
+                    <option value="Легка атлетика">🏃 Легка атлетика</option>
+                    <option value="Кіберспорт">🎮 Кіберспорт</option>
+                    <option value="Інше">Інше</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="comments">Додаткова інформація (необов'язково)</label>
+                <textarea id="comments" class="form-control" placeholder="Маєте досвід або є капітаном команди? Напишіть сюди..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">Відправити заявку</button>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="social-links">
+        <a href="https://www.instagram.com/uchnivskesamovriaduvannia?igsh=MXJtNmliZXJoYmZwdA==" target="_blank">INSTAGRAM</a>
+        <a href="https://www.facebook.com/share/1DtXY2x5Us/?mibextid=wwXIfr" target="_blank">FACEBOOK</a>
+        <a href="https://t.me/DNLLepkyi" target="_blank">TELEGRAM</a>
+        <a href="https://www.tiktok.com/@lyceumlepkogo?_r=1&_t=ZS-94d1kkArRpN" target="_blank">TIKTOK</a>
+    </div>
+    <p style="opacity:0.6;font-size:0.85rem;font-weight:600;">&copy; 2026 учнівське самоврядування</p>
+    <button id="bugTrigger" onclick="openBug()">🐞 Повідомити про баг 🐞</button>
+</footer>
+
+<script>
+const body = document.body;
+const scrollBtn = document.getElementById('scrollTopBtn');
+const sidebar = document.getElementById('sidebar');
+const themeMeta = document.getElementById('theme-color-meta');
+
+function toggleTheme() {
+    body.classList.toggle('dark');
+    const dark = body.classList.contains('dark');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    themeMeta.content = dark ? '#4b5982' : '#f1e1cd';
+}
+function toggleMenu() { sidebar.classList.toggle('open'); }
+window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', scrollY > 300));
+if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark'); themeMeta.content = '#4b5982'; }
+
+const BUG_TELEGRAM_TOKEN = '8450851710:AAGsC5O72ab-C8ZWw2guCc7bGMX0rRbhhZI';
+const BUG_CHAT_ID = '6190541661';
+function openBug() { document.getElementById('bugModal').classList.add('open'); }
+function closeBug() { document.getElementById('bugModal').classList.remove('open'); document.getElementById('bugText').value = ''; }
+async function sendBug() {
+    const text = document.getElementById('bugText').value.trim();
+    const btn = document.querySelector('.bug-send');
+    if (!text) return;
+    btn.disabled = true; btn.innerText = '⏳...';
+    try {
+        const r = await fetch('https://api.telegram.org/bot'+BUG_TELEGRAM_TOKEN+'/sendMessage', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({chat_id: BUG_CHAT_ID, text: 'Баг (Реєстрація спорт):\n'+text})
+        });
+        if (r.ok) { closeBug(); alert('✅ Надіслано!'); }
+        else alert('❌ Помилка');
+    } catch(e) { alert('❌ Немає з\'єднання'); }
+    finally { btn.disabled=false; btn.innerText='📨 Надіслати'; }
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape'){closeBug();} });
+
+function submitForm(event) {
+    event.preventDefault(); 
+    const btn = document.querySelector('.submit-btn');
+    const originalText = btn.innerText;
+    
+    btn.innerText = 'Відправка...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        alert("✅ Ваша заявка успішно надіслана!");
+        document.getElementById('sportForm').reset();
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }, 1000);
+}
+</script>
+<!-- Якщо у тебе є файл config.js, залишай його тут -->
+<script src="config.js"></script>
+<script>
+    if(typeof SITE_VERSION !== 'undefined') {
+        document.getElementById("version").textContent = SITE_VERSION;
+    }
+</script>
+</body>
+</html>
