@@ -379,20 +379,50 @@ async function sendBug() {
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape'){closeBug();} });
 
-function submitForm(event) {
+async function submitForm(event) {
     event.preventDefault(); 
+    
     const btn = document.querySelector('.submit-btn');
     const originalText = btn.innerText;
     
-    btn.innerText = 'Відправка...';
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const studentClass = document.getElementById('studentClass').value;
+    const sportType = document.getElementById('sportType').value;
+    const comments = document.getElementById('comments').value || "немає";
+
+    const message = `🏆 НОВА ЗАЯВКА НА СПОРТ!\n` +
+                    `────────────────────\n` +
+                    `👤 Учень: ${firstName} ${lastName}\n` +
+                    `🏫 Клас: ${studentClass}\n` +
+                    `⚽ Вид спорту: ${sportType}\n` +
+                    `💬 Коментар: ${comments}`;
+
+    btn.innerText = '⏳ Надсилаємо...';
     btn.disabled = true;
-    
-    setTimeout(() => {
-        alert("✅ Ваша заявка успішно надіслана!");
-        document.getElementById('sportForm').reset();
+
+    try {
+        const response = await fetch('https://api.telegram.org/bot' + BUG_TELEGRAM_TOKEN + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: BUG_CHAT_ID,
+                text: message
+            })
+        });
+
+        if (response.ok) {
+            alert("✅ Заявку прийнято! Дані надіслані самоврядуванню.");
+            document.getElementById('sportForm').reset(); 
+        } else {
+            alert("❌ Помилка бота. Спробуй пізніше.");
+        }
+    } catch (e) {
+        alert("❌ Помилка мережі.");
+    } finally {
         btn.innerText = originalText;
         btn.disabled = false;
-    }, 1000);
+    }
 }
 </script>
 <!-- Якщо у тебе є файл config.js, залишай його тут -->
