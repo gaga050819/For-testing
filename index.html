@@ -418,11 +418,9 @@ async function submitForm(event) {
 
     alert(`Ваш код реєстрації: ${txId}\nЙого додано в коментар. Після оплати 10 грн реєстрація завершиться автоматично.`);
     
-    // ВАЖЛИВО: Оскільки ми перейшли на Monobank, заміни посилання нижче на посилання твоєї Банки!
-    // Щоб коментар вставився автоматично, додай до посилання банки параметр ?text=
-    // Наприклад: https://send.monobank.ua/jar/ТВІЙ_КОД_БАНКИ?text=${txId}
+    const monoLink = `https://send.monobank.ua/jar/ТВІЙ_КОД_БАНКИ?text=${txId}`;
     
-    window.location.href = `https://donatello.ua/gaga050819?message=${txId}`;
+    window.location.href = monoLink;
 }
 </script>
 <script src="config.js"></script>
