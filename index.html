@@ -250,6 +250,16 @@ header { display: flex; flex-direction: column-reverse; gap: 15px; margin-top: 7
 .logo { align-self: center; }
 .card { padding-top: 40px; }
 }
+
+/* Стиль для віджета збору */
+.donation-widget-card {
+    padding: 0; 
+    overflow: hidden; 
+    height: 380px; 
+    max-width: 650px; 
+    margin: 0 auto 30px auto;
+    border-radius: 40px;
+}
 </style>
 </head>
 <body>
@@ -289,6 +299,17 @@ header { display: flex; flex-direction: column-reverse; gap: 15px; margin-top: 7
 </header>
 
 <div class="container">
+    
+    <div class="card donation-widget-card">
+        <iframe src="https://script.google.com/macros/s/AKfycbyCKf0Lc4dHq58HrhcuL5EYM1Ojh-CtFgCZpyrHbucm0NbXy3bCAFBWBe-h0UL8KClb/exec" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                scrolling="no"
+                style="border-radius: 40px;">
+        </iframe>
+    </div>
+
     <div class="card form-wrapper">
         <h2 class="form-title">Реєстрація на спорт</h2>
         <form id="sportForm" onsubmit="submitForm(event)">
@@ -378,6 +399,7 @@ async function sendBug() {
     finally { btn.disabled=false; btn.innerText='📨 Надіслати'; }
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape'){closeBug();} });
+
 async function submitForm(event) {
     event.preventDefault(); 
     
@@ -395,6 +417,10 @@ async function submitForm(event) {
     localStorage.setItem('my_payment_id', txId);
 
     alert(`Ваш код реєстрації: ${txId}\nЙого додано в коментар. Після оплати 10 грн реєстрація завершиться автоматично.`);
+    
+    // ВАЖЛИВО: Оскільки ми перейшли на Monobank, заміни посилання нижче на посилання твоєї Банки!
+    // Щоб коментар вставився автоматично, додай до посилання банки параметр ?text=
+    // Наприклад: https://send.monobank.ua/jar/ТВІЙ_КОД_БАНКИ?text=${txId}
     
     window.location.href = `https://donatello.ua/gaga050819?message=${txId}`;
 }
