@@ -1,21 +1,24 @@
 {
   "short_name": "Ліцей",
   "name": "Учнівське самоврядування ДНЛ",
+  "description": "Сайт учнівського самоврядування Дрогобицького наукового ліцею",
   "icons": [
     {
-      "src": "logo1varian.png",
+      "src": "Logo1variant.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo1varian.png",
+      "src": "Logo1variant.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "/For-testing/index.html",
   "background_color": "#f1e1cd",
   "display": "standalone",
-  "scope": "./",
+  "scope": "/For-testing/",
   "theme_color": "#4b5982"
 }
