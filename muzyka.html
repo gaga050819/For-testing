@@ -212,7 +212,21 @@ body.dark .song-list tbody tr.playing { background: rgba(241,225,205,0.1); }
   .col-genre { display: none; }
 }
 
-/* BOTTOM PLAYER */
+/* FILE LOADER */
+.file-loader-card {
+  background: var(--card-bg); backdrop-filter: blur(25px);
+  border-radius: 30px; border: 1.5px dashed var(--card-border);
+  padding: 28px; margin-bottom: 28px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.file-loader-card p { margin: 0; opacity: 0.7; font-size: 0.95rem; }
+.file-load-btn {
+  padding: 14px 28px; border-radius: 25px;
+  border: 1.5px solid var(--card-border);
+  background: var(--text); color: var(--bg);
+  font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--tr);
+}
+.file-load-btn:hover { opacity: 0.85; }
 #musicPlayer {
   position: fixed; bottom: 0; left: 0; right: 0;
   height: calc(88px + env(safe-area-inset-bottom));
@@ -415,26 +429,26 @@ if (typeof globalThis.SITE_VERSION !== 'undefined') document.getElementById('ver
 
 /* ════════════ ТРЕКИ ════════════ */
 const tracks = [
-  { title: "Phantasm",       artist: "Casiio & Sleepermane",          genre: "Lo-fi",    dur: "2:04", file: "Casiio_Sleepermane_-_Phantasm__musmore_com_.mp3" },
-  { title: "Atlantis",       artist: "Casiio x Sleepermane ft. Sling Dilly", genre: "Chillhop", dur: "2:02", file: "Casiio_x_Sleepermane_-_Atlantis_ft__Sling_Dilly__Byfet_com_.mp3" },
-  { title: "Aries",          artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "2:00", file: "Casiio_x_Sleepermane_-_Aries__Byfet_com_.mp3" },
-  { title: "Gemini",         artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "1:55", file: "Casiio_x_Sleepermane_-_Gemini__Byfet_com_.mp3" },
-  { title: "Heatwave",       artist: "Casiio x Sleepermane",          genre: "Chillhop", dur: "1:53", file: "Casiio_x_Sleepermane_-_Heatwave__Byfet_com_.mp3" },
-  { title: "Icarus",         artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "1:52", file: "Casiio_x_Sleepermane_-_Icarus__Byfet_com_.mp3" },
-  { title: "Lightning Bugs", artist: "Casiio x Sleepermane",          genre: "Chillhop", dur: "1:57", file: "Casiio_x_Sleepermane_-_Lightning_Bugs__Byfet_com_.mp3" },
-  { title: "Mirage",         artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "2:04", file: "Casiio_x_Sleepermane_-_Mirage__Byfet_com_.mp3" },
-  { title: "Nomads",         artist: "Casiio x Sleepermane",          genre: "Chillhop", dur: "2:15", file: "Casiio_x_Sleepermane_-_Nomads__Byfet_com_.mp3" },
-  { title: "Patterns",       artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "2:14", file: "Casiio_x_Sleepermane_-_Patterns__Byfet_com_.mp3" },
-  { title: "Prisms",         artist: "Casiio x Sleepermane",          genre: "Chillhop", dur: "2:09", file: "Casiio_x_Sleepermane_-_Prisms__Byfet_com_.mp3" },
-  { title: "Sequences",      artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "2:04", file: "Casiio_x_Sleepermane_-_Sequences__Byfet_com_.mp3" },
-  { title: "Surfaced",       artist: "Casiio x Sleepermane",          genre: "Chillhop", dur: "2:07", file: "Casiio_x_Sleepermane_-_Surfaced__Byfet_com_.mp3" },
-  { title: "Underneath",     artist: "Casiio x Sleepermane",          genre: "Lo-fi",    dur: "2:10", file: "Casiio_x_Sleepermane_-_Underneath__Byfet_com_.mp3" },
-  { title: "Aisuru",         artist: "Danisogen",                     genre: "Lo-fi",    dur: "2:11", file: "Danisogen_-_Aisuru__mp3store_cc_.mp3" },
-  { title: "Endless Seas",   artist: "DLJ ft. Hoogway",               genre: "Chillhop", dur: "2:42", file: "DLJ_-_Endless_Seas_ft__Hoogway__Byfet_com_.mp3" },
-  { title: "Far Away",       artist: "DLJ ft. Hoogway",               genre: "Chillhop", dur: "2:06", file: "DLJ_-_Far_Away_ft__Hoogway__Byfet_com_.mp3" },
-  { title: "Always Drifting",artist: "Mondo Loops",                   genre: "Lo-fi",    dur: "2:46", file: "Mondo_Loops_-_Always_Drifting__gmuz_net_.mp3" },
-  { title: "Heading North",  artist: "Hoogway feat. DLJ",             genre: "Chillhop", dur: "2:11", file: "Hoogway_-_Heading_North_feat_DLJ__Byfet_com_.mp3" },
-  { title: "Skyline",        artist: "Hoogway ft. DLJ",               genre: "Chillhop", dur: "2:15", file: "Hoogway_-_Skyline_ft_DLJ__Byfet_com_.mp3" },
+  { title:"Phantasm",        artist:"Casiio & Sleepermane",                 genre:"Lo-fi",    dur:"2:04", file:"Casiio_Sleepermane_-_Phantasm_(musmore.com).mp3" },
+  { title:"Atlantis",        artist:"Casiio x Sleepermane ft. Sling Dilly", genre:"Chillhop", dur:"2:02", file:"Casiio_x_Sleepermane_-_Atlantis_ft._Sling_Dilly_(Byfet.com).mp3" },
+  { title:"Aries",           artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"2:00", file:"Casiio_x_Sleepermane_-_Aries_(Byfet.com).mp3" },
+  { title:"Gemini",          artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"1:55", file:"Casiio_x_Sleepermane_-_Gemini_(Byfet.com).mp3" },
+  { title:"Heatwave",        artist:"Casiio x Sleepermane",                 genre:"Chillhop", dur:"1:53", file:"Casiio_x_Sleepermane_-_Heatwave_(Byfet.com).mp3" },
+  { title:"Icarus",          artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"1:52", file:"Casiio_x_Sleepermane_-_Icarus_(Byfet.com).mp3" },
+  { title:"Lightning Bugs",  artist:"Casiio x Sleepermane",                 genre:"Chillhop", dur:"1:57", file:"Casiio_x_Sleepermane_-_Lightning_Bugs_(Byfet.com).mp3" },
+  { title:"Mirage",          artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"2:04", file:"Casiio_x_Sleepermane_-_Mirage_(Byfet.com).mp3" },
+  { title:"Nomads",          artist:"Casiio x Sleepermane",                 genre:"Chillhop", dur:"2:15", file:"Casiio_x_Sleepermane_-_Nomads_(Byfet.com).mp3" },
+  { title:"Patterns",        artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"2:14", file:"Casiio_x_Sleepermane_-_Patterns_(Byfet.com).mp3" },
+  { title:"Prisms",          artist:"Casiio x Sleepermane",                 genre:"Chillhop", dur:"2:09", file:"Casiio_x_Sleepermane_-_Prisms_(Byfet.com).mp3" },
+  { title:"Sequences",       artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"2:04", file:"Casiio_x_Sleepermane_-_Sequences_(Byfet.com).mp3" },
+  { title:"Surfaced",        artist:"Casiio x Sleepermane",                 genre:"Chillhop", dur:"2:07", file:"Casiio_x_Sleepermane_-_Surfaced_(Byfet.com).mp3" },
+  { title:"Underneath",      artist:"Casiio x Sleepermane",                 genre:"Lo-fi",    dur:"2:10", file:"Casiio_x_Sleepermane_-_Underneath_(Byfet.com).mp3" },
+  { title:"Aisuru",          artist:"Danisogen",                            genre:"Lo-fi",    dur:"2:11", file:"Danisogen_-_Aisuru_(mp3store.cc).mp3" },
+  { title:"Endless Seas",    artist:"DLJ ft. Hoogway",                      genre:"Chillhop", dur:"2:42", file:"DLJ_-_Endless_Seas_ft._Hoogway_(Byfet.com).mp3" },
+  { title:"Far Away",        artist:"DLJ ft. Hoogway",                      genre:"Chillhop", dur:"2:06", file:"DLJ_-_Far_Away_ft._Hoogway_(Byfet.com).mp3" },
+  { title:"Always Drifting", artist:"Mondo Loops",                          genre:"Lo-fi",    dur:"2:46", file:"Mondo_Loops_-_Always_Drifting_(gmuz.net).mp3" },
+  { title:"Heading North",   artist:"Hoogway feat. DLJ",                    genre:"Chillhop", dur:"2:11", file:"Hoogway_-_Heading_North_feat_DLJ_(Byfet.com).mp3" },
+  { title:"Skyline",         artist:"Hoogway ft. DLJ",                      genre:"Chillhop", dur:"2:15", file:"Hoogway_-_Skyline_ft_DLJ_(Byfet.com).mp3" },
 ];
 
 const BASE = "formusik/";
@@ -443,9 +457,8 @@ let liked = false;
 let muted = false;
 
 function fmtTime(s) {
-  if (isNaN(s)) return "0:00";
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
+  if (!s || isNaN(s)) return "0:00";
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
   return `${m}:${sec < 10 ? '0' : ''}${sec}`;
 }
 
@@ -461,7 +474,7 @@ function renderSongs() {
         <div class="td-artist">${t.artist}</div>
       </td>
       <td class="col-genre"><span class="td-genre">${t.genre}</span></td>
-      <td class="td-dur">${t.dur}</td>
+      <td class="td-dur" id="dur${i}">${t.dur}</td>
     </tr>`;
   }).join('');
 }
@@ -469,9 +482,11 @@ function renderSongs() {
 function playTrack(idx) {
   currentIdx = idx;
   const t = tracks[idx];
-  audioEl.src = BASE + t.file;
+  audioEl.pause();
+  audioEl.src = BASE + encodeURIComponent(t.file);
+  audioEl.load();
   audioEl.volume = document.getElementById('volumeSlider').value / 100;
-  audioEl.play().catch(() => {});
+  audioEl.play().catch(e => console.error('❌', e.message, BASE + t.file));
   document.getElementById('playerTitle').textContent = t.title;
   document.getElementById('playerArtist').textContent = t.artist;
   document.getElementById('playPauseBtn').textContent = '⏸';
@@ -487,8 +502,12 @@ audioEl.addEventListener('timeupdate', () => {
   document.getElementById('currentTime').textContent = fmtTime(audioEl.currentTime);
   document.getElementById('durationEl').textContent = fmtTime(audioEl.duration);
 });
+audioEl.addEventListener('loadedmetadata', () => {
+  const el = document.getElementById('dur' + currentIdx);
+  if (el) { el.textContent = fmtTime(audioEl.duration); tracks[currentIdx].dur = fmtTime(audioEl.duration); }
+});
 audioEl.addEventListener('ended', () => nextTrack());
-audioEl.addEventListener('play', () => document.getElementById('playPauseBtn').textContent = '⏸');
+audioEl.addEventListener('play',  () => { document.getElementById('playPauseBtn').textContent = '⏸'; renderSongs(); });
 audioEl.addEventListener('pause', () => document.getElementById('playPauseBtn').textContent = '▶');
 
 function togglePlay() {
@@ -510,13 +529,11 @@ function toggleLike() {
 }
 function setVolume(val) {
   audioEl.volume = val / 100;
-  muted = val == 0;
   document.getElementById('volBtn').textContent = val > 50 ? '🔊' : val > 0 ? '🔉' : '🔇';
 }
 function toggleMute() {
   const sl = document.getElementById('volumeSlider');
-  muted = !muted;
-  sl.value = muted ? 0 : 80;
+  muted = !muted; sl.value = muted ? 0 : 80;
   audioEl.volume = muted ? 0 : 0.8;
   document.getElementById('volBtn').textContent = muted ? '🔇' : '🔊';
 }
