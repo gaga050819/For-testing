@@ -9,9 +9,8 @@
 <title>Новини | Учнівське самоврядування</title>
 <style>
 #versionBox {
-  position: absolute;
-  bottom: calc(15px + env(safe-area-inset-bottom));
-  left: 20px;
+  margin-top: auto;
+  padding-top: 20px;
   font-size: 13px;
   opacity: 0.6;
   color: var(--text);
@@ -66,7 +65,7 @@ body.dark {
     border-right: 1px solid var(--card-border);
     z-index: 1001; transition: var(--tr);
     display: flex; flex-direction: column;
-    padding: 100px 30px calc(60px + env(safe-area-inset-bottom));
+    padding: 100px 30px calc(30px + env(safe-area-inset-bottom));
     box-shadow: 15px 0 50px rgba(0,0,0,0.2);
     opacity: 0; visibility: hidden;
     overflow-y: auto;
@@ -210,8 +209,6 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
   border: 1.5px solid var(--card-border); background: none;
   color: var(--text); font-size: 1rem; cursor: pointer;
 }
-
-/* ── ЛАЙВХАКИ КНОПКА ── */
 .lh-trigger-btn {
   text-decoration: none; padding: 18px 25px;
   border-radius: 25px; background: rgba(255,255,255,0.1);
@@ -222,8 +219,6 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
 }
 .lh-trigger-btn:hover { transform: translateX(10px); background: rgba(255,255,255,0.3); }
 .lh-arrow { font-size: 1rem; opacity: 0.6; }
-
-/* ── ЛАЙВХАКИ BOTTOM SHEET ── */
 #lhModal {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.6); z-index: 9500;
@@ -262,7 +257,6 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
   font-weight: 600; margin-top: 4px; transition: var(--tr);
 }
 .lh-sheet-cancel:hover { opacity: 0.7; }
-
 @media (max-width: 768px) {
   .controls { flex-direction: row; width: calc(100% - 40px); justify-content: space-between; top: 15px; }
   #themeBtn, #menuBtn { padding: 10px 15px; height: 45px; font-size: 14px; }
@@ -274,8 +268,6 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
   .card-img-wrapper { width: 100%; min-width: unset; }
   .expand-btn { top: 20px; right: 20px; }
   .lh-trigger-btn { font-size: 1.05rem; padding: 18px 22px; }
-  .lh-pill { font-size: 0.95rem; }
-  .lh-pill:hover { transform: none; }
 }
 </style>
 </head>
@@ -315,7 +307,7 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
 <div class="controls">
     <button id="themeBtn" onclick="toggleTheme()">🌓 Тема</button>
     <button id="menuBtn" onclick="toggleMenu()">🏠</button>
- </div>
+</div>
 <div class="sidebar" id="sidebar">
     <button id="closeBtn" onclick="toggleMenu()">✖</button>
     <a href="index.html">Головна</a>
@@ -433,7 +425,6 @@ async function sendBug() {
 document.addEventListener('keydown', e => { if(e.key==='Escape'){closeLightbox();closeBug();closeLh();} });
 if (typeof globalThis.SITE_VERSION !== 'undefined') document.getElementById('version').textContent = globalThis.SITE_VERSION;
 
-/* ── Лайвхаки ── */
 function openLh() { document.getElementById('lhModal').classList.add('open'); }
 function closeLh() { document.getElementById('lhModal').classList.remove('open'); }
 </script>
