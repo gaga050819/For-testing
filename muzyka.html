@@ -9,9 +9,11 @@
 <title>Музика | Учнівське самоврядування</title>
 <style>
 #versionBox {
-  position: absolute;
-  bottom: calc(15px + env(safe-area-inset-bottom));
-  left: 20px; font-size: 13px; opacity: 0.6; color: var(--text);
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 13px; 
+  opacity: 0.6; 
+  color: var(--text);
 }
 :root {
   --bg: #f1e1cd; --text: #4b5982;
@@ -63,7 +65,7 @@ body.dark {
   border-right: 1px solid var(--card-border);
   z-index: 1001; transition: var(--tr);
   display: flex; flex-direction: column;
-  padding: 100px 30px calc(60px + env(safe-area-inset-bottom));
+  padding: 100px 30px calc(100px + env(safe-area-inset-bottom));
   box-shadow: 15px 0 50px rgba(0,0,0,0.2);
   opacity: 0; visibility: hidden; overflow-y: auto;
 }
