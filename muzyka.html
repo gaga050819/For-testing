@@ -293,12 +293,11 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
 <div id="lhModal" onclick="if(event.target===this)closeLh()">
   <div class="lh-sheet">
     <div class="lh-sheet-handle"></div>
-    <h3 class="lh-sheet-title">⚡ Лайвхаки</h3>
+    <h3 class="lh-sheet-title">Лайвхаки</h3>
     <p class="lh-sheet-sub">Обери тему</p>
-    <a class="lh-sheet-btn" href="aktyvniychas.html">🏃 Як активно проводити час</a>
-    <a class="lh-sheet-btn" href="activelearning.html">📚 Методи активного навчання</a>
-    <a class="lh-sheet-btn" href="Konkyrs.html">🏆 Дійсні конкурси</a>
-    <a class="lh-sheet-btn" href="muzyka.html">🎵 Музика</a>
+    <a class="lh-sheet-btn" href="aktyvniychas.html">Як активно проводити час</a>
+    <a class="lh-sheet-btn" href="activelearning.html">Методи активного навчання</a>
+    <a class="lh-sheet-btn" href="muzyka.html">Музика</a>
     <button class="lh-sheet-cancel" onclick="closeLh()">Скасувати</button>
   </div>
 </div>
@@ -318,19 +317,19 @@ footer { width: 100%; padding: 60px 20px 40px; text-align: center; margin-top: a
   <a href="about.html">Про нас</a>
   <a href="skrynkaidey.html">Скринька ідей</a>
   <a href="Konkyrs.html">Реєстрація на конкурс</a>
-  <button class="lh-trigger-btn" onclick="openLh()">⚡ Лайвхаки <span class="lh-arrow">→</span></button>
+  <button class="lh-trigger-btn" onclick="openLh()">Лайвхаки <span class="lh-arrow">→</span></button>
   <div id="versionBox">Версія: <span id="version"></span></div>
 </div>
 
 <header>
-  <h1 class="main-title">Музика 🎵</h1>
+  <h1 class="main-title">Музика</h1>
   <div class="logo">
     <img src="Logo1variant.png" alt="Логотип" style="width:120%;height:120%;object-fit:cover;">
   </div>
 </header>
 
 <div class="container">
-  <p class="section-title">🔥 Lo-fi / Chillhop плейлист</p>
+  <p class="section-title">Lo-fi / Chillhop плейлист</p>
   <div class="song-list">
     <table>
       <thead>
@@ -522,10 +521,6 @@ function prevTrack() {
 function seek(e) {
   if (!audioEl.duration) return;
   audioEl.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audioEl.duration;
-}
-function toggleLike() {
-  liked = !liked;
-  document.getElementById('likeBtn').textContent = liked ? '❤️' : '♡';
 }
 function setVolume(val) {
   audioEl.volume = val / 100;
